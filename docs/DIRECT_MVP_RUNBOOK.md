@@ -93,7 +93,7 @@ VITE_CELO_CHAIN_ID=11142220
 VITE_CELO_RPC_URL=https://forno.celo-sepolia.celo-testnet.org
 VITE_CUSD_ADDRESS=0xBFa30e9f862776349b881875027990223bf122bD
 VITE_VAULT_FACTORY_ADDRESS=0x72Ea74291A0354E4385ed5Cb2a0ad3B33634F26a
-VITE_RELAYER_BASE_URL=https://your-relayer.example.com
+VITE_RELAYER_BASE_URL=https://splitvault-relayer-production.up.railway.app
 VITE_ENABLE_BRIDGE_CARD=false
 ```
 
@@ -104,6 +104,18 @@ PORT=3000
 SUPABASE_URL=
 SUPABASE_SERVICE_KEY=
 ENABLE_BRIDGE_CARD=false
+```
+
+Current hosted relayer:
+
+```text
+https://splitvault-relayer-production.up.railway.app
+```
+
+Health check:
+
+```text
+https://splitvault-relayer-production.up.railway.app/healthz
 ```
 
 Build commands:
@@ -129,4 +141,3 @@ Do not start Bridge/Card until these are stable:
 - Contract tests pass.
 - Relayer is deployed with HTTPS.
 - No service role keys are exposed client-side.
-

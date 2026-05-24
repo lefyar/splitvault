@@ -9,8 +9,8 @@ import "../src/VaultFactory.sol";
  * @dev Deploy VaultFactory to Celo or Alfajores
  *
  * Usage:
- *   Alfajores testnet (with mock cUSD):
- *     forge script script/Deploy.s.sol --rpc-url alfajores --broadcast -vvv
+ *   Celo Sepolia testnet:
+ *     forge script script/Deploy.s.sol --rpc-url celo_sepolia --broadcast -vvv
  *
  *   Mainnet (with real cUSD):
  *     forge script script/Deploy.s.sol --rpc-url celo --broadcast --verify -vvv
@@ -19,14 +19,15 @@ contract Deploy is Script {
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
 
-        // Determine which cUSD address to use
-        // For testnet: use CUSD_ADDRESS_ALFAJORES (set to MockcUSD after deploying it)
-        // For mainnet: use CUSD_ADDRESS
         address cUSD;
-        try vm.envAddress("CUSD_ADDRESS_ALFAJORES") returns (address addr) {
+        try vm.envAddress("CUSD_ADDRESS_CELO_SEPOLIA") returns (address addr) {
             cUSD = addr;
         } catch {
-            cUSD = vm.envAddress("CUSD_ADDRESS");
+            try vm.envAddress("CUSD_ADDRESS_ALFAJORES") returns (address addr) {
+                cUSD = addr;
+            } catch {
+                cUSD = vm.envAddress("CUSD_ADDRESS");
+            }
         }
         address keeper = vm.envAddress("GELATO_KEEPER"); // Keeper (use deployer for MVP)
         address relayer = vm.envAddress("RELAYER_ADDRESS"); // Relayer EOA

@@ -7,6 +7,10 @@ build/
 out/
 cache/
 *.log
+*.tsbuildinfo
+*.d.ts
+packages/*/vite.config.js
+packages/*/tailwind.config.js
 
 # Foundry
 broadcast/

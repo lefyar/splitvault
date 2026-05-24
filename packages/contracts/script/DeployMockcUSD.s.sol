@@ -19,9 +19,6 @@ contract DeployMockcUSD is Script {
         vm.stopBroadcast();
 
         console.log("MockcUSD deployed at:", address(mockCUSD));
-        console.log(
-            "Initial balance (deployer):",
-            mockCUSD.balanceOf(vm.envAddress("DEPLOYER_PRIVATE_KEY"))
-        );
+        console.log("Initial balance (deployer):", mockCUSD.balanceOf(vm.addr(deployerPrivateKey)));
     }
 }

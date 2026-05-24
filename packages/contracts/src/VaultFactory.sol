@@ -134,7 +134,7 @@ contract VaultFactory is IVaultFactory, Ownable, KeeperCompatibleInterface {
                 bool isFunded = vault.totalFunded() >= vault.monthlyAmount();
                 bool isPastDeadline = block.timestamp >= vault.cycleDeadline();
 
-                if (isFunded && block.timestamp >= vault.nextBillingDate()) {
+                if (isFunded && isPastDeadline) {
                     upkeepNeeded = true;
                     break;
                 }
@@ -154,7 +154,7 @@ contract VaultFactory is IVaultFactory, Ownable, KeeperCompatibleInterface {
                 bool isFunded = vault.totalFunded() >= vault.monthlyAmount();
                 bool isPastDeadline = block.timestamp >= vault.cycleDeadline();
 
-                if (isFunded && block.timestamp >= vault.nextBillingDate()) {
+                if (isFunded && isPastDeadline) {
                     vault.executePayment();
                 }
                 if (!isFunded && isPastDeadline) {

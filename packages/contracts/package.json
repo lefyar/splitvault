@@ -1,0 +1,12 @@
+{
+  "name": "@splitvault/contracts",
+  "version": "0.2.0",
+  "description": "Smart contracts for SplitVault",
+  "private": true,
+  "scripts": {
+    "test": "forge test -vv",
+    "test:fuzz": "forge test --match-path 'test/fuzz/*' -vv",
+    "build": "forge build",
+    "build:abi": "forge inspect SubscriptionVault abi > ../shared/abis/SubscriptionVault.json && forge inspect VaultFactory abi > ../shared/abis/VaultFactory.json"
+  }
+}

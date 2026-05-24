@@ -1,0 +1,27 @@
+{
+  "name": "splitvault",
+  "version": "0.2.0",
+  "description": "On-chain shared subscription splitting on Celo / MiniPay",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "contracts:test": "cd packages/contracts && forge test -vv",
+    "contracts:build": "cd packages/contracts && forge build",
+    "relayer:dev": "cd packages/relayer && npm run dev",
+    "miniapp:dev": "cd packages/miniapp && npm run dev",
+    "relayer:build": "cd packages/relayer && npm run build",
+    "miniapp:build": "cd packages/miniapp && npm run build",
+    "contracts:typechain": "typechain --target ethers-v5 --out-dir packages/contracts/typechain 'packages/contracts/out/VaultFactory.sol/VaultFactory.json' 'packages/contracts/out/SubscriptionVault.sol/SubscriptionVault.json'"
+  },
+  "devDependencies": {
+    "@typechain/ethers-v5": "^10.1.0",
+    "@types/node": "^20.11.5",
+    "ethers": "^5.7.2",
+    "typechain": "^8.1.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

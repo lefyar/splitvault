@@ -11,6 +11,7 @@
     "contracts:build": "cd packages/contracts && forge build",
     "relayer:dev": "cd packages/relayer && npm run dev",
     "miniapp:dev": "cd packages/miniapp && npm run dev",
+    "build": "npm run miniapp:build",
     "relayer:build": "cd packages/relayer && npm run build",
     "miniapp:build": "cd packages/miniapp && npm run build",
     "contracts:typechain": "typechain --target ethers-v5 --out-dir packages/contracts/typechain 'packages/contracts/out/VaultFactory.sol/VaultFactory.json' 'packages/contracts/out/SubscriptionVault.sol/SubscriptionVault.json'"

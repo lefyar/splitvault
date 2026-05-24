@@ -80,4 +80,22 @@ contract SubscriptionVaultRefundDirectFlowTest is Test {
         assertEq(vault.cycleActive(), true);
         assertEq(vault.totalFunded(), 0);
     }
+
+    function testRefundCycle_CannotRefundFullyFundedVault() public {
+        SubscriptionVault vault = SubscriptionVault(factory.getVaultAt(0));
+
+        cUSD.mint(bob, monthlyAmount / 2);
+        vm.startPrank(bob);
+        cUSD.approve(address(vault), type(uint256).max);
+        vault.fundShare();
+        vm.stopPrank();
+
+        assertEq(vault.totalFunded(), monthlyAmount);
+
+        vm.warp(vault.cycleDeadline());
+
+        vm.prank(address(factory));
+        vm.expectRevert("Vault is fully funded");
+        vault.refundCycle();
+    }
 }

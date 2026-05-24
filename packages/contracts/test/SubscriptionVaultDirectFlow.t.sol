@@ -73,7 +73,6 @@ contract SubscriptionVaultDirectFlowTest is Test {
         uint256 deadline = vault.cycleDeadline();
         vm.warp(deadline + 1);
 
-        uint256 vaultBalBefore = cUSD.balanceOf(address(vault));
         uint256 merchantBalBefore = cUSD.balanceOf(merchant);
 
         vm.expectEmit(true, true, true, true);
@@ -94,5 +93,36 @@ contract SubscriptionVaultDirectFlowTest is Test {
 
         // Ensure vault actually transferred funds
         assertEq(cUSD.balanceOf(address(vault)), 0);
+    }
+
+    function testExecutePayment_RequiresFullFunding() public {
+        SubscriptionVault vault = SubscriptionVault(factory.getVaultAt(0));
+
+        vm.prank(alice);
+        vault.fundShare();
+
+        vm.warp(vault.cycleDeadline() + 1);
+
+        vm.prank(address(factory));
+        vm.expectRevert("Not fully funded");
+        vault.executePayment();
+    }
+
+    function testExecutePayment_CannotRunTwice() public {
+        SubscriptionVault vault = SubscriptionVault(factory.getVaultAt(0));
+
+        vm.prank(alice);
+        vault.fundShare();
+        vm.prank(bob);
+        vault.fundShare();
+
+        vm.warp(vault.cycleDeadline() + 1);
+
+        vm.prank(address(factory));
+        vault.executePayment();
+
+        vm.prank(address(factory));
+        vm.expectRevert("Cycle not active");
+        vault.executePayment();
     }
 }

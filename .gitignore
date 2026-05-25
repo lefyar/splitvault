@@ -10,12 +10,13 @@ cache/
 *.log
 *.tsbuildinfo
 *.d.ts
+!packages/miniapp/src/vite-env.d.ts
 packages/*/vite.config.js
 packages/*/tailwind.config.js
 
 # Foundry
 broadcast/
-lib/
+packages/contracts/lib/
 
 # IDE
 .vscode/

@@ -14,13 +14,13 @@ function App() {
         <Router>
             <Layout>
                 {!address ? (
-                    <div className="min-h-[520px] grid place-items-center">
+                    <div className="min-h-[560px] grid place-items-center">
                         <div className="max-w-xl text-center space-y-5">
-                            <div className="mx-auto grid h-14 w-14 place-items-center rounded-md bg-teal-700 text-white text-2xl font-bold">S</div>
+                            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary text-black text-2xl font-bold">S</div>
                             <div>
-                                <h2 className="text-3xl font-bold text-gray-900">Connect your MiniPay wallet</h2>
-                                <p className="text-gray-600 mt-3">
-                                    Create shared {CUSD_LABEL} vaults, invite members, and pay merchants directly from one place.
+                                <h2 className="text-4xl sm:text-5xl font-bold leading-[0.95] text-primary">Connect your MiniPay wallet</h2>
+                                <p className="text-primary/60 mt-4 leading-tight">
+                                    Create shared {CUSD_LABEL} vaults for crypto-native SaaS invoices, invite members, and pay verified merchant wallets directly.
                                 </p>
                             </div>
                         </div>

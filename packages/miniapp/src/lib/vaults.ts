@@ -113,7 +113,22 @@ export async function loadVaultByAddress(vaultAddress: Address, viewer: Address)
     .then((vaults) => vaults.filter((vault) => vault.contract_addr.toLowerCase() === vaultAddress.toLowerCase()))
     .catch(() => [])
 
-  return hydrateVault(metadata || fallbackMetadata, viewer, client)
+  return retry(() => hydrateVault(metadata || fallbackMetadata, viewer, client), 3)
+}
+
+async function retry<T>(operation: () => Promise<T>, attempts: number): Promise<T> {
+  let lastError: unknown
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await operation()
+    } catch (err) {
+      lastError = err
+      if (attempt < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, 600 * attempt))
+      }
+    }
+  }
+  throw lastError
 }
 
 async function hydrateVault(meta: VaultMetadata, viewer: Address, client: ReturnType<typeof getPublicClient>): Promise<VaultWithMeta> {
@@ -186,6 +201,28 @@ async function hydrateVault(meta: VaultMetadata, viewer: Address, client: Return
     userShare: userMember?.sharePercent,
     userFunded: userMember?.funded,
   }
+}
+
+export async function saveImportedVaultMetadata(vault: VaultWithMeta) {
+  await saveVaultMetadata({
+    vaultAddress: vault.id,
+    creator: vault.creator,
+    tokenAddress: CUSD_ADDRESS,
+    createParams: {
+      serviceName: vault.serviceName || 'Imported Direct Vault',
+      monthlyAmount: formatUnits(vault.monthlyAmount, 18),
+      billingDay: vault.billingDay,
+      route: 'DIRECT' as PaymentRoute,
+      merchantAddress: vault.merchantAddress,
+      networkId: ACTIVE_CHAIN_ID,
+      members: vault.members.map((member) => ({
+        name: member.name || (member.wallet.toLowerCase() === vault.creator.toLowerCase() ? 'Creator' : 'Member'),
+        wallet: member.wallet,
+        share: member.sharePercent,
+        shareAmount: member.shareAmount.toString(),
+      })),
+    },
+  })
 }
 
 export async function createDirectVault(params: {

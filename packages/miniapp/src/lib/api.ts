@@ -33,7 +33,7 @@ export async function fetchVaultMetadata(member: Address): Promise<VaultMetadata
 
 export async function saveVaultMetadata(params: {
   vaultAddress: Address
-  txHash: string
+  txHash?: string
   creator: Address
   tokenAddress: Address
   createParams: CreateVaultParams

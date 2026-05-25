@@ -1,8 +1,67 @@
 import { Router } from 'express'
+import { createPublicClient, defineChain, formatUnits, http } from 'viem'
+import { requireMerchantAdmin } from './merchants.js'
 
 export const vaultsRouter = Router()
 
 type Address = `0x${string}`
+
+const CELO_CHAIN_ID = 42220
+const CELO_SEPOLIA_CHAIN_ID = 11142220
+const DEFAULT_CELO_RPC_URL = 'https://forno.celo.org'
+const DEFAULT_CELO_SEPOLIA_RPC_URL = 'https://forno.celo-sepolia.celo-testnet.org'
+const DEFAULT_CELO_CUSD_ADDRESS = '0x765DE816845861e75A25fCA122bb6898B8B1282a'
+const DEFAULT_SEPOLIA_MOCK_CUSD_ADDRESS = '0xBFa30e9f862776349b881875027990223bf122bD'
+
+const VAULT_REPAIR_ABI = [
+  {
+    type: 'function',
+    name: 'monthlyAmount',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'billingDay',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'merchantAddress',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address' }],
+  },
+  {
+    type: 'function',
+    name: 'creator',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address' }],
+  },
+  {
+    type: 'function',
+    name: 'getMembers',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'address[]' }],
+  },
+  {
+    type: 'function',
+    name: 'members',
+    stateMutability: 'view',
+    inputs: [{ name: 'addr', type: 'address' }],
+    outputs: [
+      { name: 'wallet', type: 'address' },
+      { name: 'sharePercent', type: 'uint256' },
+      { name: 'shareAmount', type: 'uint256' },
+      { name: 'funded', type: 'bool' },
+    ],
+  },
+] as const
 
 interface VaultRow {
   contract_addr: Address
@@ -30,6 +89,35 @@ interface VaultMemberRow {
 
 function isAddress(value: unknown): value is Address {
   return typeof value === 'string' && /^0x[a-fA-F0-9]{40}$/.test(value)
+}
+
+function getRpcUrl(chainId: number) {
+  if (chainId === CELO_CHAIN_ID) return process.env.CELO_RPC_URL || DEFAULT_CELO_RPC_URL
+  if (chainId === CELO_SEPOLIA_CHAIN_ID) return process.env.CELO_SEPOLIA_RPC_URL || DEFAULT_CELO_SEPOLIA_RPC_URL
+  throw new Error('Unsupported chainId')
+}
+
+function getTokenAddress(chainId: number): Address {
+  if (chainId === CELO_CHAIN_ID) return (process.env.CUSD_ADDRESS || DEFAULT_CELO_CUSD_ADDRESS) as Address
+  if (chainId === CELO_SEPOLIA_CHAIN_ID) {
+    return (process.env.CUSD_ADDRESS_CELO_SEPOLIA || DEFAULT_SEPOLIA_MOCK_CUSD_ADDRESS) as Address
+  }
+  throw new Error('Unsupported chainId')
+}
+
+function createChainClient(chainId: number) {
+  const rpcUrl = getRpcUrl(chainId)
+  const chain = defineChain({
+    id: chainId,
+    name: chainId === CELO_CHAIN_ID ? 'Celo' : 'Celo Sepolia',
+    nativeCurrency: { name: 'CELO', symbol: 'CELO', decimals: 18 },
+    rpcUrls: { default: { http: [rpcUrl] } },
+  })
+
+  return createPublicClient({
+    chain,
+    transport: http(rpcUrl),
+  })
 }
 
 function requireSupabase() {
@@ -174,6 +262,90 @@ vaultsRouter.post('/', async (req, res) => {
     return res.status(201).json({ ok: true })
   } catch (err) {
     console.error('[relayer] POST /api/vaults failed', err)
+    return res.status(500).json({ ok: false, error: String(err) })
+  }
+})
+
+vaultsRouter.post('/repair', async (req, res) => {
+  try {
+    const auth = requireMerchantAdmin(req)
+    if (!auth.ok) {
+      return res.status(auth.status).json({ ok: false, error: auth.error })
+    }
+
+    const body = req.body as Partial<{
+      vaultAddress: Address
+      chainId: number
+      serviceName: string
+    }>
+
+    if (!isAddress(body.vaultAddress)) {
+      return res.status(400).json({ ok: false, error: 'Invalid vaultAddress' })
+    }
+
+    const chainId = Number(body.chainId || CELO_SEPOLIA_CHAIN_ID)
+    if (![CELO_CHAIN_ID, CELO_SEPOLIA_CHAIN_ID].includes(chainId)) {
+      return res.status(400).json({ ok: false, error: 'Unsupported chainId' })
+    }
+
+    const client = createChainClient(chainId)
+    const [monthlyAmount, billingDay, merchantAddress, creator, memberAddresses] = await Promise.all([
+      client.readContract({ address: body.vaultAddress, abi: VAULT_REPAIR_ABI, functionName: 'monthlyAmount' }) as Promise<bigint>,
+      client.readContract({ address: body.vaultAddress, abi: VAULT_REPAIR_ABI, functionName: 'billingDay' }) as Promise<bigint>,
+      client.readContract({ address: body.vaultAddress, abi: VAULT_REPAIR_ABI, functionName: 'merchantAddress' }) as Promise<Address>,
+      client.readContract({ address: body.vaultAddress, abi: VAULT_REPAIR_ABI, functionName: 'creator' }) as Promise<Address>,
+      client.readContract({ address: body.vaultAddress, abi: VAULT_REPAIR_ABI, functionName: 'getMembers' }) as Promise<Address[]>,
+    ])
+
+    const memberRows: VaultMemberRow[] = await Promise.all(memberAddresses.map(async (wallet) => {
+      const memberTuple = await client.readContract({
+        address: body.vaultAddress!,
+        abi: VAULT_REPAIR_ABI,
+        functionName: 'members',
+        args: [wallet],
+      }) as readonly [Address, bigint, bigint, boolean]
+
+      return {
+        vault_addr: body.vaultAddress!,
+        wallet_addr: wallet,
+        display_name: wallet.toLowerCase() === creator.toLowerCase() ? 'Creator' : 'Member',
+        share_percent: Number(memberTuple[1]),
+        share_amount: memberTuple[2].toString(),
+      }
+    }))
+
+    const vaultRow: VaultRow = {
+      contract_addr: body.vaultAddress,
+      creator_addr: creator,
+      service_name: body.serviceName?.trim() || 'Imported Direct Vault',
+      merchant_addr: merchantAddress,
+      token_addr: getTokenAddress(chainId),
+      monthly_amount: formatUnits(monthlyAmount, 18),
+      billing_day: Number(billingDay),
+      route: 'DIRECT',
+      chain_id: chainId,
+    }
+
+    await supabaseFetch('vaults?on_conflict=contract_addr', {
+      method: 'POST',
+      headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+      body: JSON.stringify(vaultRow),
+    })
+
+    await supabaseFetch('vault_members?on_conflict=vault_addr,wallet_addr', {
+      method: 'POST',
+      headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+      body: JSON.stringify(memberRows),
+    })
+
+    return res.status(200).json({
+      ok: true,
+      vault: body.vaultAddress,
+      creator,
+      members: memberRows.length,
+    })
+  } catch (err) {
+    console.error('[relayer] POST /api/vaults/repair failed', err)
     return res.status(500).json({ ok: false, error: String(err) })
   }
 })

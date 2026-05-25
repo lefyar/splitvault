@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Button, Badge, ProgressBar, Tabs } from '../components/UI'
 import { Card } from '../components/UI'
 import { useStore } from '../store'
-import { assertValidAddress, formatCusd, fundUserShare, getVaultHistory, loadVaultByAddress, mintTestCusd, runFactoryUpkeep, type VaultHistoryItem } from '../lib/vaults'
+import { assertValidAddress, formatCusd, fundUserShare, getVaultHistory, loadVaultByAddress, mintTestCusd, runFactoryUpkeep, saveImportedVaultMetadata, type VaultHistoryItem } from '../lib/vaults'
 import { useWallet } from '../hooks/useWallet'
 import { ACTIVE_EXPLORER_URL, ACTIVE_NETWORK_NAME, CUSD_LABEL, IS_TESTNET } from '../lib/contracts'
 import type { VaultWithMeta } from '../types'
@@ -16,7 +16,7 @@ export function VaultDetail() {
     const [directVault, setDirectVault] = useState<VaultWithMeta | null>(null)
     const [isLoadingDirectVault, setIsLoadingDirectVault] = useState(false)
     const { id } = useParams()
-    const { address, vaults } = useStore()
+    const { address, vaults, addVault } = useStore()
     const { loadVaults, updateBalance } = useWallet()
     const listedVault = vaults.find((candidate) => candidate.id.toLowerCase() === id?.toLowerCase())
     const vault = listedVault || directVault
@@ -29,7 +29,12 @@ export function VaultDetail() {
             setTxStatus(null)
             try {
                 const vaultAddress = assertValidAddress(id, 'Vault address')
-                setDirectVault(await loadVaultByAddress(vaultAddress, address))
+                const loadedVault = await loadVaultByAddress(vaultAddress, address)
+                setDirectVault(loadedVault)
+                addVault(loadedVault)
+                saveImportedVaultMetadata(loadedVault).catch((err) => {
+                    console.warn('Failed to save imported vault metadata:', err)
+                })
             } catch (err) {
                 setTxStatus(err instanceof Error ? err.message : String(err))
                 setDirectVault(null)

@@ -4,12 +4,12 @@ import { buildMerchantAdminRows, requireMerchantAdmin } from './merchants.js'
 describe('merchant admin helpers', () => {
   it('builds Supabase rows for a static wallet merchant', () => {
     const rows = buildMerchantAdminRows({
-      id: 'launch-test-wallet',
-      name: 'Launch test wallet',
-      description: 'Internal smoke-test merchant.',
-      category: 'internal',
-      icon: 'TEST',
-      suggestedCost: 1,
+      id: 'custom-direct-wallet',
+      name: 'Custom direct merchant',
+      description: 'User-verified direct merchant.',
+      category: 'custom',
+      icon: '0x',
+      suggestedCost: 10,
       status: 'verified',
       paymentMethods: [
         {
@@ -23,13 +23,13 @@ describe('merchant admin helpers', () => {
     })
 
     expect(rows.merchant).toMatchObject({
-      id: 'launch-test-wallet',
-      suggested_cost: 1,
+      id: 'custom-direct-wallet',
+      suggested_cost: 10,
       route: 'DIRECT',
       status: 'verified',
     })
     expect(rows.paymentMethods[0]).toMatchObject({
-      merchant_id: 'launch-test-wallet',
+      merchant_id: 'custom-direct-wallet',
       chain_id: 11142220,
       mode: 'static_wallet',
       enabled: true,

@@ -196,8 +196,8 @@ export function NewVault() {
             {step === 1 && (
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Choose Direct Merchant Type</h2>
-                        <p className="text-gray-600 mt-2">Pick a verified merchant when available, or use a manual direct-wallet template.</p>
+                        <h2 className="text-2xl font-bold text-gray-900">Choose Direct Merchant</h2>
+                        <p className="text-gray-600 mt-2">Pick a verified merchant when available, or use a custom wallet you have independently verified.</p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

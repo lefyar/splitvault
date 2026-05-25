@@ -281,25 +281,9 @@ export const FACTORY_ABI = [
   },
 ] as const
 
-// Direct merchant templates. The merchant wallet is still entered by the user
-// so the vault can pay any real cUSD recipient on the active Celo network.
+// Manual fallback. Verified merchants should come from the registry; this keeps
+// the app usable when the registry is unavailable or intentionally empty.
 export const MERCHANTS: Merchant[] = [
-  {
-    id: 'saas',
-    name: 'SaaS subscription',
-    description: 'Split a shared workspace, software seat, or recurring invoice.',
-    icon: 'SaaS',
-    suggestedCost: 21,
-    route: PaymentRoute.DIRECT,
-  },
-  {
-    id: 'creator',
-    name: 'Creator payout',
-    description: 'Pool monthly support and send it to a creator or community wallet.',
-    icon: 'PAY',
-    suggestedCost: 10,
-    route: PaymentRoute.DIRECT,
-  },
   {
     id: 'custom',
     name: 'Custom merchant',

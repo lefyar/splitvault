@@ -131,6 +131,8 @@ on conflict (chain_id, token_addr) do nothing;
 
 insert into merchants (id, name, description, category, icon, suggested_cost, route, status, website_url)
 values
-  ('launch-test-wallet', 'Launch test wallet', 'Internal direct-payout merchant for tiny production smoke tests.', 'internal', 'TEST', 1, 'DIRECT', 'verified', null),
   ('custom-direct-wallet', 'Custom direct merchant', 'Use any merchant wallet that you have independently verified.', 'custom', '0x', 10, 'DIRECT', 'verified', null)
 on conflict (id) do nothing;
+
+delete from merchants
+where id = 'launch-test-wallet';

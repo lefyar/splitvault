@@ -55,14 +55,14 @@ MERCHANT_SEED_PAYOUT_ADDRESS=
 Optional env:
 
 ```bash
-MERCHANT_SEED_ID=launch-test-wallet
+MERCHANT_SEED_ID=custom-direct-wallet
 MERCHANT_SEED_CHAIN_ID=11142220
 MERCHANT_SEED_TOKEN_SYMBOL=MockcUSD
-MERCHANT_SEED_NAME=Launch test wallet
-MERCHANT_SEED_DESCRIPTION=Internal direct-payout merchant for tiny production smoke tests.
-MERCHANT_SEED_CATEGORY=internal
-MERCHANT_SEED_ICON=TEST
-MERCHANT_SEED_SUGGESTED_COST=1
+MERCHANT_SEED_NAME=Custom direct merchant
+MERCHANT_SEED_DESCRIPTION=Use any merchant wallet that you have independently verified.
+MERCHANT_SEED_CATEGORY=custom
+MERCHANT_SEED_ICON=0x
+MERCHANT_SEED_SUGGESTED_COST=10
 MERCHANT_SEED_STATUS=verified
 ```
 
@@ -73,12 +73,12 @@ curl -X POST "$RELAYER_BASE_URL/api/merchants" \
   -H "Authorization: Bearer $MERCHANT_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "launch-test-wallet",
-    "name": "Launch test wallet",
-    "description": "Internal direct-payout merchant for tiny production smoke tests.",
-    "category": "internal",
-    "icon": "TEST",
-    "suggestedCost": 1,
+    "id": "custom-direct-wallet",
+    "name": "Custom direct merchant",
+    "description": "Use any merchant wallet that you have independently verified.",
+    "category": "custom",
+    "icon": "0x",
+    "suggestedCost": 10,
     "status": "verified",
     "paymentMethods": [
       {
@@ -99,9 +99,9 @@ Disable a merchant:
 
 ```json
 {
-  "id": "launch-test-wallet",
-  "name": "Launch test wallet",
-  "description": "Internal direct-payout merchant for tiny production smoke tests.",
+  "id": "custom-direct-wallet",
+  "name": "Custom direct merchant",
+  "description": "Use any merchant wallet that you have independently verified.",
   "status": "disabled"
 }
 ```

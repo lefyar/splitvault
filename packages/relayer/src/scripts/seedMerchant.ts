@@ -12,7 +12,7 @@ async function main() {
   const relayerBaseUrl = requireEnv('RELAYER_BASE_URL')
   const adminToken = requireEnv('MERCHANT_ADMIN_TOKEN')
 
-  const merchantId = process.env.MERCHANT_SEED_ID || 'launch-test-wallet'
+  const merchantId = process.env.MERCHANT_SEED_ID || 'custom-direct-wallet'
   const tokenSymbol = process.env.MERCHANT_SEED_TOKEN_SYMBOL || 'MockcUSD'
   const chainId = Number(process.env.MERCHANT_SEED_CHAIN_ID || '11142220')
   const tokenAddress = requireEnv('MERCHANT_SEED_TOKEN_ADDRESS')
@@ -26,11 +26,11 @@ async function main() {
     },
     body: JSON.stringify({
       id: merchantId,
-      name: process.env.MERCHANT_SEED_NAME || 'Launch test wallet',
-      description: process.env.MERCHANT_SEED_DESCRIPTION || 'Internal direct-payout merchant for tiny production smoke tests.',
-      category: process.env.MERCHANT_SEED_CATEGORY || 'internal',
-      icon: process.env.MERCHANT_SEED_ICON || 'TEST',
-      suggestedCost: Number(process.env.MERCHANT_SEED_SUGGESTED_COST || '1'),
+      name: process.env.MERCHANT_SEED_NAME || 'Custom direct merchant',
+      description: process.env.MERCHANT_SEED_DESCRIPTION || 'Use any merchant wallet that you have independently verified.',
+      category: process.env.MERCHANT_SEED_CATEGORY || 'custom',
+      icon: process.env.MERCHANT_SEED_ICON || '0x',
+      suggestedCost: Number(process.env.MERCHANT_SEED_SUGGESTED_COST || '10'),
       status: process.env.MERCHANT_SEED_STATUS || 'verified',
       paymentMethods: [
         {

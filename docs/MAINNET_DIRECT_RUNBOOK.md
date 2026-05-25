@@ -105,7 +105,7 @@ insert into merchant_payment_methods (
   payout_address,
   enabled
 ) values (
-  'launch-test-wallet',
+  'custom-direct-wallet',
   42220,
   'cUSD',
   '0x765DE816845861e75A25fCA122bb6898B8B1282a',
@@ -115,7 +115,7 @@ insert into merchant_payment_methods (
 );
 ```
 
-Only `status = verified` merchants are returned to the miniapp. If the registry is unavailable or empty, the miniapp falls back to manual direct-wallet templates so local testing still works.
+Only `status = verified` merchants are returned to the miniapp. If the registry is unavailable or empty, the miniapp falls back to the custom merchant option so local testing still works.
 
 The miniapp also keeps a custom merchant option available, but warns users that custom payout addresses are not registry-verified.
 

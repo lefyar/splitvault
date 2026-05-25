@@ -14,13 +14,13 @@ export function Button({
     children,
     ...props
 }: ButtonProps) {
-    const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[color:var(--color-bg)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
+    const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[color:var(--color-bg)] disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:scale-100'
 
     const variantClasses = {
-        primary: 'bg-primary text-white shadow-[0_10px_30px_rgba(135,25,252,0.28)] hover:-translate-y-0.5 hover:shadow-[0_14px_38px_rgba(135,25,252,0.34)] hover:brightness-110 active:translate-y-0 active:scale-[0.98]',
-        secondary: 'bg-[color:var(--color-card-solid)] text-[color:var(--color-text)] border border-[color:var(--color-border)] shadow-[0_8px_24px_rgba(25,40,55,0.06)] hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_12px_32px_rgba(25,40,55,0.1)] active:translate-y-0 active:bg-[color:var(--color-soft)]',
-        danger: 'bg-red-600 text-white shadow-[0_8px_24px_rgba(220,38,38,0.22)] hover:-translate-y-0.5 hover:bg-red-700 active:translate-y-0 active:bg-red-800',
-        ghost: 'text-[color:var(--color-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-soft)] active:bg-[color:var(--color-soft)]',
+        primary: 'bg-[color:var(--color-accent)] text-white shadow-[0_10px_30px_rgba(135,25,252,0.28)] hover:-translate-y-0.5 hover:shadow-[0_14px_38px_rgba(135,25,252,0.34)] hover:brightness-110 active:translate-y-0 active:scale-[0.98] disabled:bg-[color:var(--color-soft)] disabled:text-[color:var(--color-muted)] disabled:shadow-none disabled:hover:brightness-100',
+        secondary: 'bg-[color:var(--color-card-solid)] text-[color:var(--color-text)] border border-[color:var(--color-border)] shadow-[0_8px_24px_rgba(25,40,55,0.06)] hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_12px_32px_rgba(25,40,55,0.1)] active:translate-y-0 active:bg-[color:var(--color-soft)] disabled:bg-[color:var(--color-soft)] disabled:text-[color:var(--color-muted)] disabled:shadow-none',
+        danger: 'bg-red-600 text-white shadow-[0_8px_24px_rgba(220,38,38,0.22)] hover:-translate-y-0.5 hover:bg-red-700 active:translate-y-0 active:bg-red-800 disabled:bg-red-200 disabled:text-red-500 disabled:shadow-none',
+        ghost: 'text-[color:var(--color-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-soft)] active:bg-[color:var(--color-soft)] disabled:text-[color:var(--color-muted)] disabled:bg-transparent',
     }
 
     const sizeClasses = {

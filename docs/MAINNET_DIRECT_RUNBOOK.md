@@ -126,11 +126,27 @@ Authorization: Bearer <MERCHANT_ADMIN_TOKEN>
 
 Use this for controlled admin scripts or one-off seeding. Never expose `MERCHANT_ADMIN_TOKEN` to the frontend or any `VITE_` variable.
 
+Admin listing:
+
+```text
+GET /api/merchants/admin
+Authorization: Bearer <MERCHANT_ADMIN_TOKEN>
+```
+
+The public miniapp endpoint only returns `verified` merchants with an enabled payment method matching the active chain/token. The admin endpoint returns draft, verified, and disabled merchants plus all payment methods.
+
 Local seed command:
 
 ```bash
 cd packages/relayer
 npm run admin:seed-merchant
+```
+
+Local list command:
+
+```bash
+cd packages/relayer
+npm run admin:list-merchants
 ```
 
 Required env vars for the seed command:
@@ -141,6 +157,19 @@ MERCHANT_ADMIN_TOKEN=
 MERCHANT_SEED_TOKEN_ADDRESS=
 MERCHANT_SEED_PAYOUT_ADDRESS=
 ```
+
+To disable a merchant, POST the same merchant with:
+
+```json
+{
+  "id": "merchant-id",
+  "name": "Merchant Name",
+  "description": "Merchant description",
+  "status": "disabled"
+}
+```
+
+To hide one payment method while keeping the merchant record, POST the method with `enabled: false`.
 
 ## Deploy Mainnet Factory
 

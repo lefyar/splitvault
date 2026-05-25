@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "dev": "npm run build && node dist/index.js",
     "start": "node dist/index.js",
+    "admin:list-merchants": "npm run build && node dist/scripts/listMerchants.js",
     "admin:seed-merchant": "npm run build && node dist/scripts/seedMerchant.js",
     "admin:repair-vault": "npm run build && node dist/scripts/repairVault.js",
     "test": "vitest run --exclude 'dist/**'",

@@ -29,6 +29,10 @@ interface MerchantPaymentMethodRow {
   enabled: boolean
 }
 
+interface MerchantWithMethods extends MerchantRow {
+  paymentMethods: MerchantPaymentMethodRow[]
+}
+
 type MerchantPaymentMethodInsertRow = Omit<MerchantPaymentMethodRow, 'id'> & {
   id?: string
   min_amount?: string
@@ -186,6 +190,33 @@ async function supabaseFetch(path: string, init: RequestInit = {}) {
   return response
 }
 
+function formatMerchant(merchant: MerchantRow, methods: MerchantPaymentMethodRow[]) {
+  return {
+    id: merchant.id,
+    name: merchant.name,
+    description: merchant.description,
+    category: merchant.category,
+    icon: merchant.icon,
+    suggestedCost: merchant.suggested_cost,
+    route: merchant.route,
+    status: merchant.status,
+    websiteUrl: merchant.website_url,
+    paymentMethods: methods
+      .filter((method) => method.merchant_id === merchant.id)
+      .map((method) => ({
+        id: method.id,
+        merchantId: method.merchant_id,
+        chainId: method.chain_id,
+        tokenSymbol: method.token_symbol,
+        tokenAddress: method.token_address,
+        mode: method.mode,
+        payoutAddress: method.payout_address,
+        adapterKey: method.adapter_key,
+        enabled: method.enabled,
+      })),
+  }
+}
+
 merchantsRouter.get('/', async (req, res) => {
   try {
     const chainId = Number(req.query.chainId)
@@ -214,33 +245,38 @@ merchantsRouter.get('/', async (req, res) => {
     )
     const merchants = (await merchantResponse.json()) as MerchantRow[]
 
-    return res.json({
-      merchants: merchants.map((merchant) => ({
-        id: merchant.id,
-        name: merchant.name,
-        description: merchant.description,
-        category: merchant.category,
-        icon: merchant.icon,
-        suggestedCost: merchant.suggested_cost,
-        route: merchant.route,
-        status: merchant.status,
-        paymentMethods: methods
-          .filter((method) => method.merchant_id === merchant.id)
-          .map((method) => ({
-            id: method.id,
-            merchantId: method.merchant_id,
-            chainId: method.chain_id,
-            tokenSymbol: method.token_symbol,
-            tokenAddress: method.token_address,
-            mode: method.mode,
-            payoutAddress: method.payout_address,
-            adapterKey: method.adapter_key,
-            enabled: method.enabled,
-          })),
-      })),
-    })
+    return res.json({ merchants: merchants.map((merchant) => formatMerchant(merchant, methods)) })
   } catch (err) {
     console.error('[relayer] GET /api/merchants failed', err)
+    return res.status(500).json({ ok: false, error: String(err) })
+  }
+})
+
+merchantsRouter.get('/admin', async (req, res) => {
+  try {
+    const auth = requireMerchantAdmin(req)
+    if (!auth.ok) {
+      return res.status(auth.status).json({ ok: false, error: auth.error })
+    }
+
+    const [merchantResponse, methodResponse] = await Promise.all([
+      supabaseFetch('merchants?select=*&order=name.asc'),
+      supabaseFetch('merchant_payment_methods?select=*&order=created_at.desc'),
+    ])
+    const merchants = (await merchantResponse.json()) as MerchantRow[]
+    const methods = (await methodResponse.json()) as MerchantPaymentMethodRow[]
+
+    const formatted: MerchantWithMethods[] = merchants.map((merchant) => ({
+      ...merchant,
+      paymentMethods: methods.filter((method) => method.merchant_id === merchant.id),
+    }))
+
+    return res.json({
+      ok: true,
+      merchants: formatted.map((merchant) => formatMerchant(merchant, methods)),
+    })
+  } catch (err) {
+    console.error('[relayer] GET /api/merchants/admin failed', err)
     return res.status(500).json({ ok: false, error: String(err) })
   }
 })

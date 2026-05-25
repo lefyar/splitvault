@@ -100,6 +100,20 @@ describe('POST /events/paymentExecuted', () => {
     expect(res.body.error).toBe('Invalid or missing timestamp (expected number)')
   })
 
+  it('returns 400 when txHash is malformed', async () => {
+    const res = await handlePaymentExecutedRequest({
+        vaultAddress: '0x0000000000000000000000000000000000000000',
+        amount: '100',
+        timestamp: 1710000000,
+        txHash: '0x123',
+        route: 'DIRECT',
+      })
+
+    expect(res.status).toBe(400)
+    expect(res.body.ok).toBe(false)
+    expect(res.body.error).toBe('Invalid txHash (expected 0x-prefixed 64-hex string)')
+  })
+
   it('defaults route to DIRECT when omitted', async () => {
     const res = await handlePaymentExecutedRequest({
         vaultAddress: '0x0000000000000000000000000000000000000000',

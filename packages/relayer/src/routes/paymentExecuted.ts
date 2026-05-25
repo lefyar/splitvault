@@ -12,6 +12,7 @@ type PaymentExecutedBody = Partial<{
   vaultAddress: string
   amount: string
   timestamp: number
+  txHash: string
   route: PaymentRoute
 }>
 
@@ -28,7 +29,7 @@ export async function handlePaymentExecutedRequest(
   body: PaymentExecutedBody,
 ): Promise<PaymentExecutedResult> {
   try {
-    const { vaultAddress, amount, timestamp, route } = body
+    const { vaultAddress, amount, timestamp, txHash, route } = body
 
     if (!isValidAddress(vaultAddress)) {
       return {
@@ -54,10 +55,17 @@ export async function handlePaymentExecutedRequest(
       }
     }
 
+    if (txHash !== undefined && (typeof txHash !== 'string' || !/^0x[a-fA-F0-9]{64}$/.test(txHash))) {
+      return {
+        status: 400,
+        body: { ok: false, error: 'Invalid txHash (expected 0x-prefixed 64-hex string)' },
+      }
+    }
+
     const effectiveRoute: PaymentRoute = route ?? 'DIRECT'
 
     if (effectiveRoute === 'DIRECT') {
-      await handlePaymentExecutedDirect({ vaultAddress, amount, timestamp })
+      await handlePaymentExecutedDirect({ vaultAddress, amount, timestamp, txHash })
     } else if (effectiveRoute === 'BRIDGE') {
       await handlePaymentExecutedBridge({ vaultAddress, amount, timestamp })
     } else if (effectiveRoute === 'CARD') {

@@ -117,6 +117,31 @@ insert into merchant_payment_methods (
 
 Only `status = verified` merchants are returned to the miniapp. If the registry is unavailable or empty, the miniapp falls back to manual direct-wallet templates so local testing still works.
 
+Merchant writes can also go through the relayer:
+
+```text
+POST /api/merchants
+Authorization: Bearer <MERCHANT_ADMIN_TOKEN>
+```
+
+Use this for controlled admin scripts or one-off seeding. Never expose `MERCHANT_ADMIN_TOKEN` to the frontend or any `VITE_` variable.
+
+Local seed command:
+
+```bash
+cd packages/relayer
+npm run admin:seed-merchant
+```
+
+Required env vars for the seed command:
+
+```bash
+RELAYER_BASE_URL=
+MERCHANT_ADMIN_TOKEN=
+MERCHANT_SEED_TOKEN_ADDRESS=
+MERCHANT_SEED_PAYOUT_ADDRESS=
+```
+
 ## Deploy Mainnet Factory
 
 Before deployment:

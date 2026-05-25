@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "dev": "npm run build && node dist/index.js",
     "start": "node dist/index.js",
+    "admin:seed-merchant": "npm run build && node dist/scripts/seedMerchant.js",
     "test": "vitest run --exclude 'dist/**'",
     "lint": "echo 'no-lint-config-yet'"
   },

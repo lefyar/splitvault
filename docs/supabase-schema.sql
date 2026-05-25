@@ -37,8 +37,12 @@ create table if not exists payment_events (
   event_type text not null,
   tx_hash text,
   amount text,
+  event_timestamp timestamptz,
   created_at timestamptz not null default now()
 );
+
+alter table payment_events
+  add column if not exists event_timestamp timestamptz;
 
 create table if not exists payment_tokens (
   id uuid primary key default gen_random_uuid(),

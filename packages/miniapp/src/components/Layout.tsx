@@ -1,19 +1,10 @@
 import React from 'react'
 import { useWallet } from '../hooks/useWallet'
 import { Button } from './UI'
-import { formatUnits } from 'viem'
-import { ACTIVE_NETWORK_NAME, CUSD_LABEL } from '../lib/contracts'
-
-function formatCusd(balance: bigint) {
-    const value = Number(formatUnits(balance, 18))
-    return new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(value)
-}
+import { ACTIVE_NETWORK_NAME } from '../lib/contracts'
 
 export function Header() {
-    const { address, balance, connect, disconnect, isConnecting } = useWallet()
+    const { address, connect, disconnect, isConnecting } = useWallet()
 
     return (
         <header className="sticky top-0 z-50 border-b border-[#192837]/10 bg-[#F2F2EE]/85 backdrop-blur-xl">
@@ -30,16 +21,13 @@ export function Header() {
                     <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                         <div className="text-right min-w-0">
                             <div className="text-xs sm:text-sm text-[#192837]/55 truncate">{address.slice(0, 6)}...{address.slice(-4)}</div>
-                            <div className="text-xs sm:text-sm font-semibold text-[#192837]">
-                                {formatCusd(balance)} {CUSD_LABEL}
-                            </div>
                         </div>
                         <Button variant="ghost" size="sm" onClick={disconnect}>
                             Disconnect
                         </Button>
                     </div>
                 ) : (
-                    <Button isLoading={isConnecting} onClick={connect}>
+                    <Button variant="primary" isLoading={isConnecting} onClick={connect}>
                         Connect Wallet
                     </Button>
                 )}

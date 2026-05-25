@@ -17,7 +17,7 @@ export function Button({
     const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#F2F2EE] disabled:opacity-50 disabled:cursor-not-allowed'
 
     const variantClasses = {
-        primary: 'bg-primary text-white shadow-[0_4px_24px_rgba(115,66,226,0.28)] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96]',
+        primary: 'bg-primary text-[#192837] shadow-[0_4px_24px_rgba(135,25,252,0.28)] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96]',
         secondary: 'bg-[#F2F2EE] text-[#192837] border border-[#192837]/10 hover:bg-white active:bg-[#E8E6DE]',
         danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
         ghost: 'text-[#192837]/80 hover:text-[#192837] hover:bg-[#192837]/8 active:bg-[#192837]/12',
@@ -61,7 +61,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Card({ className, hoverable = false, ...props }: CardProps) {
     return (
         <div
-            className={`bg-white/70 rounded-[1.25rem] border border-[#192837]/10 p-5 shadow-[0_18px_60px_rgba(25,40,55,0.08)] backdrop-blur-sm ${hoverable ? 'hover:border-primary/35 hover:bg-white hover:shadow-[0_22px_70px_rgba(25,40,55,0.12)] transition-all cursor-pointer' : ''
+            className={`bg-white/70 rounded-[1.25rem] border p-5 shadow-[0_18px_60px_rgba(25,40,55,0.08)] backdrop-blur-sm ${hoverable ? 'hover:border-primary/35 hover:bg-white hover:shadow-[0_22px_70px_rgba(25,40,55,0.12)] transition-all cursor-pointer' : ''
                 } ${className || ''}`}
             {...props}
         />
@@ -130,7 +130,7 @@ export function ProgressBar({ current, total, label }: ProgressBarProps) {
             </div>}
             <div className="w-full bg-[#192837]/10 rounded-full h-2">
                 <div
-                    className="bg-primary h-2 rounded-full transition-all"
+                    className="bg-[#8719fc] h-2 rounded-full transition-all"
                     style={{ width: `${percent}%` }}
                 />
             </div>
@@ -173,13 +173,68 @@ export function Tabs({ tabs, activeTab, onChange }: TabsProps) {
                     key={tab.value}
                     onClick={() => onChange(tab.value)}
                     className={`pb-4 px-4 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === tab.value
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-[#192837]/55 hover:text-[#192837]'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-[#192837]/55 hover:text-[#192837]'
                         }`}
                 >
                     {tab.label}
                 </button>
             ))}
+        </div>
+    )
+}
+
+interface AccordionItem {
+    title: string
+    content: string
+}
+
+interface AccordionProps {
+    items: AccordionItem[]
+    className?: string
+}
+
+export function Accordion({ items, className = '' }: AccordionProps) {
+    const [openIndex, setOpenIndex] = React.useState<number | null>(null)
+
+    const handleToggle = (index: number) => {
+        setOpenIndex(openIndex === index ? null : index)
+    }
+
+    return (
+        <div className={`flex flex-col gap-2 ${className}`}>
+            {items.map((item, index) => {
+                const isOpen = openIndex === index
+                return (
+                    <div
+                        key={index}
+                        className="bg-white/70 rounded-[1.25rem] border border-[#192837]/10 overflow-hidden"
+                    >
+                        <button
+                            onClick={() => handleToggle(index)}
+                            className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-white/50 transition-colors"
+                        >
+                            <span className="font-semibold text-[#192837]">{item.title}</span>
+                            <svg
+                                className={`w-5 h-5 text-primary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96' : 'max-h-0'
+                                }`}
+                        >
+                            <div className="px-5 pb-4 text-[#192837]/80">
+                                {item.content}
+                            </div>
+                        </div>
+                    </div>
+                )
+            })}
         </div>
     )
 }

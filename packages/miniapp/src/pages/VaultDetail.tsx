@@ -91,7 +91,7 @@ export function VaultDetail() {
     return (
         <div className="space-y-8">
             <Link to="/" className="inline-flex">
-                <Button variant="ghost" size="sm">Back to Dashboard</Button>
+                <Button variant="secondary" size="sm" className='border-black'>Back to Dashboard</Button>
             </Link>
 
             <div className="space-y-4">

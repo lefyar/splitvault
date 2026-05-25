@@ -156,7 +156,7 @@ export function NewVault() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {MERCHANTS.map((merchant) => {
+                        {MERCHANTS.map((merchant) => {
                             const unavailable = merchant.route !== 'DIRECT'
                             return (
                                 <Card
@@ -218,10 +218,10 @@ export function NewVault() {
                         </p>
                     </div>
 
-                    <Card className="border-l-4 border-teal-600 bg-teal-50">
+                    <Card>
                         <div className="space-y-4">
                             <div>
-                                <p className="text-sm font-medium text-teal-950">Direct {CUSD_LABEL} Transfer</p>
+                                <p className="text-sm font-medium text-black">Direct {CUSD_LABEL} Transfer</p>
                                 <p className="text-xs text-teal-800 mt-1">
                                     On billing day, the vault transfers the funded total directly to this merchant wallet.
                                 </p>
@@ -238,7 +238,7 @@ export function NewVault() {
                                 onChange={(event) => setMerchantAddress(event.target.value)}
                                 placeholder="0x..."
                             />
-                            <p className="text-xs text-teal-800">
+                            <p className="text-xs text-black">
                                 Use a wallet address you control for launch testing. For a real merchant, confirm they can receive {CUSD_LABEL} on {ACTIVE_NETWORK_NAME}.
                             </p>
                         </div>

@@ -13,6 +13,14 @@ declare global {
 let walletClient: any = null
 let publicClient: any = null
 
+export function isMiniPayProvider() {
+  return Boolean(window.ethereum?.isMiniPay)
+}
+
+export function getMiniPayBrowseUrl(url = window.location.href) {
+  return `https://link.minipay.xyz/browse?url=${encodeURIComponent(url)}`
+}
+
 const celoSepolia = defineChain({
   id: CELO_SEPOLIA_CHAIN_ID,
   name: 'Celo Sepolia',

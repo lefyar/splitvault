@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useStore } from '../store'
-import { ensureCorrectChain, getWalletClient, initializeMiniPay, getConnectedAddress, switchToCelo } from '../lib/minipay'
+import { ensureCorrectChain, getWalletClient, initializeMiniPay, getConnectedAddress, isMiniPayProvider, switchToCelo } from '../lib/minipay'
 import { getPublicClient } from '../lib/minipay'
 import { CUSD_ADDRESS, ERC20_ABI } from '../lib/contracts'
 import { Address } from '../types'
@@ -10,6 +10,8 @@ function getWalletErrorMessage(err: unknown) {
   if (err instanceof Error) return err.message
   return String(err)
 }
+
+let miniPayAutoConnectStarted = false
 
 export function useWallet() {
   const { address, isConnecting, balance, walletError, setAddress, setConnecting, setBalance, setConnected, setWalletError, setVaults, setLoadingVaults } = useStore()
@@ -72,6 +74,12 @@ export function useWallet() {
   useEffect(() => {
     const checkConnection = async () => {
       try {
+        if (isMiniPayProvider() && !address && !miniPayAutoConnectStarted) {
+          miniPayAutoConnectStarted = true
+          await connect()
+          return
+        }
+
         const addr = await getConnectedAddress()
         if (addr) {
           await ensureCorrectChain()

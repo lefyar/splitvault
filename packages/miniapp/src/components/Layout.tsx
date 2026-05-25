@@ -2,9 +2,11 @@ import React from 'react'
 import { useWallet } from '../hooks/useWallet'
 import { Button, Card } from './UI'
 import { ACTIVE_NETWORK_NAME } from '../lib/contracts'
+import { isMiniPayProvider } from '../lib/minipay'
 
 export function Header() {
     const { address, connect, disconnect, isConnecting, walletError } = useWallet()
+    const isMiniPay = isMiniPayProvider()
 
     return (
         <header className="sticky top-0 z-50 border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)]/85 backdrop-blur-xl">
@@ -28,9 +30,15 @@ export function Header() {
                     </div>
                 ) : (
                     <div className="flex items-center gap-2">
-                        <Button variant="primary" isLoading={isConnecting} onClick={connect}>
-                            Connect Wallet
-                        </Button>
+                        {isMiniPay ? (
+                            <span className="text-sm font-medium text-[color:var(--color-muted)]">
+                                {isConnecting ? 'Connecting...' : 'MiniPay'}
+                            </span>
+                        ) : (
+                            <Button variant="primary" isLoading={isConnecting} onClick={connect}>
+                                Connect Wallet
+                            </Button>
+                        )}
                     </div>
                 )}
             </div>

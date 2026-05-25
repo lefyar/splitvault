@@ -16,10 +16,10 @@ function App() {
                 {!address ? (
                     <div className="min-h-[560px] grid place-items-center">
                         <div className="max-w-xl text-center space-y-5">
-                            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary text-black text-2xl font-bold">S</div>
+                            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#192837] text-white text-2xl font-heading">S</div>
                             <div>
-                                <h2 className="text-4xl sm:text-5xl font-bold leading-[0.95] text-primary">Connect your MiniPay wallet</h2>
-                                <p className="text-primary/60 mt-4 leading-tight">
+                                <h2 className="text-4xl sm:text-5xl font-heading leading-[0.95] text-[#192837]">Connect your MiniPay wallet</h2>
+                                <p className="text-[#192837]/70 mt-4 leading-tight">
                                     Create shared {CUSD_LABEL} vaults for crypto-native SaaS invoices, invite members, and pay verified merchant wallets directly.
                                 </p>
                             </div>

@@ -14,19 +14,19 @@ export function Button({
     children,
     ...props
 }: ButtonProps) {
-    const baseClasses = 'inline-flex items-center justify-center gap-2 font-medium rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed'
+    const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#F2F2EE] disabled:opacity-50 disabled:cursor-not-allowed'
 
     const variantClasses = {
-        primary: 'bg-primary text-black hover:bg-[#f0edd7] active:bg-[#c9c5ad]',
-        secondary: 'bg-[#161616] text-primary border border-primary/20 hover:border-primary/60 hover:bg-[#212121] active:bg-[#292929]',
-        danger: 'bg-red-700 text-white hover:bg-red-600 active:bg-red-800',
-        ghost: 'text-primary/80 hover:text-primary hover:bg-primary/10 active:bg-primary/15',
+        primary: 'bg-primary text-white shadow-[0_4px_24px_rgba(115,66,226,0.28)] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96]',
+        secondary: 'bg-[#F2F2EE] text-[#192837] border border-[#192837]/10 hover:bg-white active:bg-[#E8E6DE]',
+        danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
+        ghost: 'text-[#192837]/80 hover:text-[#192837] hover:bg-[#192837]/8 active:bg-[#192837]/12',
     }
 
     const sizeClasses = {
-        sm: 'px-3 py-1.5 text-sm min-h-9',
-        md: 'px-4 py-2 text-base min-h-11',
-        lg: 'px-6 py-3 text-lg',
+        sm: 'px-3.5 py-1.5 text-sm min-h-9',
+        md: 'px-5 py-2.5 text-base min-h-11',
+        lg: 'px-6 py-4 text-lg',
     }
 
     return (
@@ -61,7 +61,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Card({ className, hoverable = false, ...props }: CardProps) {
     return (
         <div
-            className={`bg-[#101010]/95 rounded-2xl border border-primary/10 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] ${hoverable ? 'hover:border-primary/45 hover:bg-[#161616] transition-all cursor-pointer' : ''
+            className={`bg-white/70 rounded-[1.25rem] border border-[#192837]/10 p-5 shadow-[0_18px_60px_rgba(25,40,55,0.08)] backdrop-blur-sm ${hoverable ? 'hover:border-primary/35 hover:bg-white hover:shadow-[0_22px_70px_rgba(25,40,55,0.12)] transition-all cursor-pointer' : ''
                 } ${className || ''}`}
             {...props}
         />
@@ -76,9 +76,9 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export function Input({ label, error, className, ...props }: InputProps) {
     return (
         <div className="flex flex-col gap-2">
-            {label && <label className="text-sm font-medium text-primary/80">{label}</label>}
+            {label && <label className="text-sm font-semibold text-[#192837]/80">{label}</label>}
             <input
-                className={`px-4 py-2.5 border rounded-xl bg-black/40 text-primary placeholder:text-primary/35 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-primary/20'
+                className={`px-4 py-2.5 border rounded-2xl bg-white/75 text-[#192837] placeholder:text-[#192837]/35 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-[#192837]/12'
                     } ${className || ''}`}
                 {...props}
             />
@@ -96,9 +96,9 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 export function Select({ label, error, options, className, ...props }: SelectProps) {
     return (
         <div className="flex flex-col gap-2">
-            {label && <label className="text-sm font-medium text-primary/80">{label}</label>}
+            {label && <label className="text-sm font-semibold text-[#192837]/80">{label}</label>}
             <select
-                className={`px-4 py-2.5 border rounded-xl bg-black/40 text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-primary/20'
+                className={`px-4 py-2.5 border rounded-2xl bg-white/75 text-[#192837] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-[#192837]/12'
                     } ${className || ''}`}
                 {...props}
             >
@@ -126,9 +126,9 @@ export function ProgressBar({ current, total, label }: ProgressBarProps) {
         <div className="flex flex-col gap-2">
             {label && <div className="flex justify-between text-sm">
                 <span className="font-medium">{label}</span>
-                <span className="text-primary/55">{percent}%</span>
+                <span className="text-[#192837]/55">{percent}%</span>
             </div>}
-            <div className="w-full bg-primary/10 rounded-full h-2">
+            <div className="w-full bg-[#192837]/10 rounded-full h-2">
                 <div
                     className="bg-primary h-2 rounded-full transition-all"
                     style={{ width: `${percent}%` }}
@@ -144,10 +144,10 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 export function Badge({ variant = 'default', className, ...props }: BadgeProps) {
     const variantClasses = {
-        default: 'bg-primary/10 text-primary',
-        success: 'bg-emerald-400/15 text-emerald-200',
-        warning: 'bg-amber-300/15 text-amber-200',
-        danger: 'bg-red-400/15 text-red-200',
+        default: 'bg-[#192837]/8 text-[#192837]',
+        success: 'bg-emerald-100 text-emerald-800',
+        warning: 'bg-amber-100 text-amber-800',
+        danger: 'bg-red-100 text-red-800',
     }
 
     return (
@@ -167,14 +167,14 @@ interface TabsProps {
 
 export function Tabs({ tabs, activeTab, onChange }: TabsProps) {
     return (
-        <div className="flex gap-2 border-b border-primary/10 overflow-x-auto">
+        <div className="flex gap-2 border-b border-[#192837]/10 overflow-x-auto">
             {tabs.map((tab) => (
                 <button
                     key={tab.value}
                     onClick={() => onChange(tab.value)}
                     className={`pb-4 px-4 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === tab.value
                             ? 'text-primary border-b-2 border-primary'
-                            : 'text-primary/55 hover:text-primary'
+                            : 'text-[#192837]/55 hover:text-[#192837]'
                         }`}
                 >
                     {tab.label}

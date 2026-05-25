@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#DEDBC8',
+        primary: '#7342E2',
         gray: {
           50: '#f9fafb',
           100: '#f3f4f6',
@@ -21,7 +21,8 @@ export default {
         },
       },
       fontFamily: {
-        serif: ['"Instrument Serif"', 'serif'],
+        heading: ['"Helvetica Now Display Bold"', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
       },
     },
   },

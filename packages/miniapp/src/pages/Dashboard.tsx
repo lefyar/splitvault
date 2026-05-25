@@ -32,14 +32,13 @@ export function Dashboard() {
 
     return (
         <div className="space-y-7">
-            <Card className="relative overflow-hidden bg-[#101010] text-primary border-primary/10">
-                <div className="noise-overlay pointer-events-none absolute inset-0 opacity-40 mix-blend-overlay" />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-black/60" />
+            <Card className="relative overflow-hidden bg-white/70 text-[#192837] border-[#192837]/10">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(115,66,226,0.18),transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.72),rgba(242,242,238,0.35))]" />
                 <div className="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
                     <div>
-                        <p className="text-primary/70 text-sm font-medium">Total {CUSD_LABEL} Balance</p>
-                        <h2 className="text-5xl sm:text-6xl font-bold mt-2 text-primary tracking-[-0.05em]">{formatCusd(balance)}</h2>
-                        <p className="text-xs text-primary/45 mt-3 uppercase tracking-[0.22em]">{ACTIVE_NETWORK_NAME}</p>
+                        <p className="text-[#192837]/70 text-sm font-medium">Total {CUSD_LABEL} Balance</p>
+                        <h2 className="text-5xl sm:text-6xl font-heading mt-2 text-[#192837] tracking-[-0.04em]">{formatCusd(balance)}</h2>
+                        <p className="text-xs text-[#192837]/45 mt-3 uppercase tracking-[0.22em]">{ACTIVE_NETWORK_NAME}</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2">
                         {IS_TESTNET && (
@@ -54,14 +53,14 @@ export function Dashboard() {
                         </Link>
                     </div>
                 </div>
-                {mintStatus && <p className="relative text-sm text-primary/60 mt-4">{mintStatus}</p>}
+                {mintStatus && <p className="relative text-sm text-[#192837]/65 mt-4">{mintStatus}</p>}
             </Card>
 
             <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h2 className="text-2xl font-bold text-primary">My Vaults</h2>
-                        <p className="text-sm text-primary/55 mt-1">
+                        <h2 className="text-2xl font-heading text-[#192837]">My Vaults</h2>
+                        <p className="text-sm text-[#192837]/60 mt-1">
                             {isLoadingVaults ? 'Loading vaults...' : `${vaults.length} vault${vaults.length === 1 ? '' : 's'} tracked`}
                         </p>
                     </div>
@@ -70,14 +69,14 @@ export function Dashboard() {
                     </Link>
                 </div>
 
-                <div className="inline-flex w-full sm:w-auto rounded-full border border-primary/10 bg-[#101010] p-1">
+                <div className="inline-flex w-full sm:w-auto rounded-full border border-[#192837]/10 bg-white/65 p-1">
                     {(['all', 'active', 'pending'] as const).map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
                             className={`flex-1 sm:flex-none px-3 py-2 rounded text-sm font-medium transition-colors ${filter === f
-                                    ? 'bg-primary text-black'
-                                    : 'text-primary/60 hover:bg-primary/10 hover:text-primary'
+                                    ? 'bg-primary text-white'
+                                    : 'text-[#192837]/60 hover:bg-[#192837]/5 hover:text-[#192837]'
                                 }`}
                         >
                             {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Pending Funding'}
@@ -87,11 +86,11 @@ export function Dashboard() {
 
                 {filteredVaults.length === 0 ? (
                     <Card className="text-center py-12">
-                        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary text-black font-bold">S</div>
-                        <h3 className="font-semibold text-primary mt-4">
+                        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[#192837] text-white font-heading">S</div>
+                        <h3 className="font-heading text-[#192837] mt-4">
                             {vaults.length === 0 ? 'No vaults yet' : 'No vaults match this filter'}
                         </h3>
-                        <p className="text-primary/55 mt-2 mb-5">
+                        <p className="text-[#192837]/60 mt-2 mb-5">
                             {vaults.length === 0 ? `Create a direct ${CUSD_LABEL} vault for a crypto-native SaaS merchant or invoice recipient.` : 'Try another status filter.'}
                         </p>
                         <Link to="/vault/new">
@@ -105,8 +104,8 @@ export function Dashboard() {
                                 <Card hoverable className="space-y-4">
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <p className="text-sm text-primary/55">{vault.serviceName || 'Untitled Vault'}</p>
-                                            <h3 className="text-lg font-semibold text-primary">
+                                            <p className="text-sm text-[#192837]/55">{vault.serviceName || 'Untitled Vault'}</p>
+                                            <h3 className="text-lg font-heading text-[#192837]">
                                                 {formatCusd(vault.monthlyAmount)} {CUSD_LABEL}/mo
                                             </h3>
                                         </div>
@@ -119,12 +118,12 @@ export function Dashboard() {
 
                                     <div className="space-y-2">
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-primary/50">Members</span>
-                                            <span className="font-medium text-primary/85">{vault.members.length}</span>
+                                            <span className="text-[#192837]/50">Members</span>
+                                            <span className="font-medium text-[#192837]/85">{vault.members.length}</span>
                                         </div>
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-primary/50">Billing Day</span>
-                                            <span className="font-medium text-primary/85">Day {vault.billingDay}</span>
+                                            <span className="text-[#192837]/50">Billing Day</span>
+                                            <span className="font-medium text-[#192837]/85">Day {vault.billingDay}</span>
                                         </div>
                                     </div>
 

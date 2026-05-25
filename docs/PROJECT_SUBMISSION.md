@@ -21,7 +21,8 @@ SplitVault is non-custodial: funds move through smart contracts and direct token
 - Custom merchant wallet flow is implemented for manually verified recipients.
 - Dashboard and vault detail show connected-wallet funding status.
 - Relayer upkeep endpoints can check and execute due vaults.
-- Mainnet settlement is intentionally gated until keys, merchant wallets, and tiny-value smoke tests are complete.
+- Celo mainnet `VaultFactory` is deployed at `0x82A9D7C665133377f307b2214B0195E55556898b`.
+- Mainnet settlement remains limited to tiny-value smoke testing until merchant wallets and operational keys are confirmed.
 
 ## Platform And Legal References
 

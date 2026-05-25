@@ -123,13 +123,22 @@ Before adding a production verified merchant:
 
 ## Mainnet Readiness
 
+Current Celo mainnet deployment:
+
+```text
+VaultFactory: 0x82A9D7C665133377f307b2214B0195E55556898b
+cUSD:         0x765DE816845861e75A25fCA122bb6898B8B1282a
+Chain ID:     42220
+RPC:          https://forno.celo.org
+```
+
 Mainnet frontend env:
 
 ```bash
 VITE_CELO_CHAIN_ID=42220
 VITE_CELO_RPC_URL=https://forno.celo.org
 VITE_CUSD_ADDRESS=0x765DE816845861e75A25fCA122bb6898B8B1282a
-VITE_VAULT_FACTORY_ADDRESS=<mainnet VaultFactory>
+VITE_VAULT_FACTORY_ADDRESS=0x82A9D7C665133377f307b2214B0195E55556898b
 VITE_RELAYER_BASE_URL=<https relayer url>
 VITE_ENABLE_BRIDGE_CARD=false
 ```
@@ -139,7 +148,7 @@ Mainnet relayer env:
 ```bash
 CELO_RPC_URL=https://forno.celo.org
 CUSD_ADDRESS=0x765DE816845861e75A25fCA122bb6898B8B1282a
-FACTORY_ADDRESS=<mainnet VaultFactory>
+FACTORY_ADDRESS=0x82A9D7C665133377f307b2214B0195E55556898b
 RELAYER_ADDRESS=<relayer EOA>
 RELAYER_PRIVATE_KEY=<fresh relayer key>
 ALLOW_MAINNET_UPKEEP=false
@@ -154,14 +163,13 @@ Before mainnet:
 3. Keep some CELO for gas.
 4. Swap a tiny amount of CELO to cUSD for smoke testing.
 5. Run all tests.
-6. Deploy `VaultFactory` on Celo mainnet with real cUSD.
-7. Configure Vercel/Railway env vars.
-8. Add a controlled `splitvault-mainnet-smoke` merchant payment method.
-9. Create a tiny `0.01` or `0.05` cUSD vault.
-10. Fund all member shares.
-11. Run upkeep manually.
-12. Confirm merchant wallet received cUSD and events were recorded.
-13. Only then enable mainnet upkeep automation.
+6. Configure Vercel/Railway env vars.
+7. Add a controlled `splitvault-mainnet-smoke` merchant payment method if a preset merchant is needed.
+8. Create a tiny `0.01` or `0.05` cUSD vault with a custom merchant wallet controlled by the team.
+9. Fund all member shares.
+10. Run upkeep manually.
+11. Confirm merchant wallet received cUSD and events were recorded.
+12. Only then enable mainnet upkeep automation.
 
 Deploy command:
 

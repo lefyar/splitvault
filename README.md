@@ -85,3 +85,10 @@ Do not deploy or run real mainnet settlement without an explicit go-ahead. Befor
 mainnet, rotate exposed keys, swap only a tiny amount of CELO to cUSD, deploy the
 factory, add a controlled smoke-test merchant wallet, and settle a tiny cUSD vault
 before onboarding real merchants.
+
+## Next Development Notes
+
+- Improve the disconnected-wallet landing experience. Either upgrade the current
+  wallet-not-connected screen or add a dedicated landing page that explains how
+  SplitVault works, why it exists, who it is for, and includes a clear call to
+  action before wallet connection.

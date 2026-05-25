@@ -33,7 +33,7 @@ function App() {
                             ) : (
                                 <a
                                     href={miniPayUrl}
-                                    className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 py-2.5 font-semibold text-[#192837] shadow-[0_4px_24px_rgba(135,25,252,0.28)] transition-all hover:scale-[1.04] hover:brightness-110 active:scale-[0.96]"
+                                    className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 py-2.5 font-semibold text-white shadow-[0_10px_30px_rgba(135,25,252,0.28)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_14px_38px_rgba(135,25,252,0.34)] active:translate-y-0 active:scale-[0.98]"
                                 >
                                     Open in MiniPay
                                 </a>

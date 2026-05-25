@@ -14,12 +14,12 @@ export function Button({
     children,
     ...props
 }: ButtonProps) {
-    const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[color:var(--color-bg)] disabled:opacity-50 disabled:cursor-not-allowed'
+    const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[color:var(--color-bg)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
 
     const variantClasses = {
-        primary: 'bg-primary text-[#192837] shadow-[0_4px_24px_rgba(135,25,252,0.28)] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96]',
-        secondary: 'bg-[color:var(--color-card-solid)] text-[color:var(--color-text)] border border-[color:var(--color-border)] hover:bg-[color:var(--color-card)] active:bg-[color:var(--color-soft)]',
-        danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
+        primary: 'bg-primary text-white shadow-[0_10px_30px_rgba(135,25,252,0.28)] hover:-translate-y-0.5 hover:shadow-[0_14px_38px_rgba(135,25,252,0.34)] hover:brightness-110 active:translate-y-0 active:scale-[0.98]',
+        secondary: 'bg-[color:var(--color-card-solid)] text-[color:var(--color-text)] border border-[color:var(--color-border)] shadow-[0_8px_24px_rgba(25,40,55,0.06)] hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_12px_32px_rgba(25,40,55,0.1)] active:translate-y-0 active:bg-[color:var(--color-soft)]',
+        danger: 'bg-red-600 text-white shadow-[0_8px_24px_rgba(220,38,38,0.22)] hover:-translate-y-0.5 hover:bg-red-700 active:translate-y-0 active:bg-red-800',
         ghost: 'text-[color:var(--color-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-soft)] active:bg-[color:var(--color-soft)]',
     }
 
@@ -61,7 +61,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Card({ className, hoverable = false, ...props }: CardProps) {
     return (
         <div
-            className={`bg-[color:var(--color-card)] rounded-[1.25rem] border border-[color:var(--color-border)] p-5 shadow-[0_18px_60px_rgba(25,40,55,0.08)] backdrop-blur-sm ${hoverable ? 'hover:border-primary/35 hover:bg-[color:var(--color-card-solid)] hover:shadow-[0_22px_70px_rgba(25,40,55,0.12)] transition-all cursor-pointer' : ''
+            className={`animate-soft-in bg-[color:var(--color-card)] rounded-[1.25rem] border border-[color:var(--color-border)] p-5 shadow-[0_18px_60px_rgba(25,40,55,0.08)] backdrop-blur-sm ${hoverable ? 'hover:-translate-y-1 hover:border-primary/35 hover:bg-[color:var(--color-card-solid)] hover:shadow-[0_22px_70px_rgba(25,40,55,0.12)] transition-all duration-200 ease-out cursor-pointer' : ''
                 } ${className || ''}`}
             {...props}
         />
@@ -78,7 +78,7 @@ export function Input({ label, error, className, ...props }: InputProps) {
         <div className="flex flex-col gap-2">
             {label && <label className="text-sm font-semibold text-[color:var(--color-muted)]">{label}</label>}
             <input
-                className={`px-4 py-2.5 border rounded-2xl bg-[color:var(--color-card)] text-[color:var(--color-text)] placeholder:text-[color:var(--color-muted)] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-[color:var(--color-border)]'
+                className={`px-4 py-2.5 border rounded-2xl bg-[color:var(--color-card)] text-[color:var(--color-text)] placeholder:text-[color:var(--color-muted)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent focus:bg-white focus:shadow-[0_10px_28px_rgba(25,40,55,0.08)] ${error ? 'border-red-500' : 'border-[color:var(--color-border)]'
                     } ${className || ''}`}
                 {...props}
             />
@@ -98,7 +98,7 @@ export function Select({ label, error, options, className, ...props }: SelectPro
         <div className="flex flex-col gap-2">
             {label && <label className="text-sm font-semibold text-[color:var(--color-muted)]">{label}</label>}
             <select
-                className={`px-4 py-2.5 border rounded-2xl bg-[color:var(--color-card)] text-[color:var(--color-text)] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-[color:var(--color-border)]'
+                className={`px-4 py-2.5 border rounded-2xl bg-[color:var(--color-card)] text-[color:var(--color-text)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent focus:bg-white focus:shadow-[0_10px_28px_rgba(25,40,55,0.08)] ${error ? 'border-red-500' : 'border-[color:var(--color-border)]'
                     } ${className || ''}`}
                 {...props}
             >
@@ -130,7 +130,7 @@ export function ProgressBar({ current, total, label }: ProgressBarProps) {
             </div>}
             <div className="w-full bg-[color:var(--color-soft)] rounded-full h-2">
                 <div
-                    className="bg-[#8719fc] h-2 rounded-full transition-all"
+                    className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${percent}%` }}
                 />
             </div>

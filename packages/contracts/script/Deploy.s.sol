@@ -20,16 +20,18 @@ contract Deploy is Script {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
 
         address cUSD;
-        try vm.envAddress("CUSD_ADDRESS_CELO_SEPOLIA") returns (address addr) {
+        try vm.envAddress("CUSD_ADDRESS") returns (address addr) {
             cUSD = addr;
         } catch {
-            try vm.envAddress("CUSD_ADDRESS_ALFAJORES") returns (address addr) {
+            try vm.envAddress("CUSD_ADDRESS_CELO_SEPOLIA") returns (
+                address addr
+            ) {
                 cUSD = addr;
             } catch {
-                cUSD = vm.envAddress("CUSD_ADDRESS");
+                cUSD = vm.envAddress("CUSD_ADDRESS_ALFAJORES");
             }
         }
-        address keeper = vm.envAddress("GELATO_KEEPER"); // Keeper (use deployer for MVP)
+        address keeper = vm.envOr("GELATO_KEEPER", address(0)); // Optional log-only keeper.
         address relayer = vm.envAddress("RELAYER_ADDRESS"); // Relayer EOA
 
         vm.startBroadcast(deployerPrivateKey);

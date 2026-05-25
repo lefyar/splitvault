@@ -214,7 +214,7 @@ function App() {
 
     return (
         <Router>
-            <Layout>
+            <Layout showFooter={!address}>
                 {!address ? (
                     <LandingPage isConnecting={isConnecting} />
                 ) : (

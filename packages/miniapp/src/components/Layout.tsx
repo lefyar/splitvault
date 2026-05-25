@@ -4,9 +4,37 @@ import { Button, Card } from './UI'
 import { ACTIVE_NETWORK_NAME } from '../lib/contracts'
 import { useStore } from '../store'
 
+function ThemeSwitch() {
+    const { theme, toggleTheme } = useStore()
+    const isDark = theme === 'dark'
+
+    return (
+        <button
+            type="button"
+            role="switch"
+            aria-checked={isDark}
+            aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+            onClick={toggleTheme}
+            className="relative inline-flex h-9 w-[4.75rem] shrink-0 items-center rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-card)] p-1 shadow-[0_8px_28px_rgba(25,40,55,0.08)] transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[color:var(--color-bg)]"
+        >
+            <span
+                className={`absolute text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors ${isDark ? 'left-2 text-[color:var(--color-muted)]' : 'left-[2.35rem] text-[color:var(--color-muted)]'
+                    }`}
+            >
+                {isDark ? 'Dark' : 'Light'}
+            </span>
+            <span
+                className={`grid h-7 w-7 place-items-center rounded-full bg-[color:var(--color-text)] text-[color:var(--color-bg)] text-sm shadow-sm transition-transform ${isDark ? 'translate-x-10' : 'translate-x-0'
+                    }`}
+            >
+                {isDark ? 'D' : 'L'}
+            </span>
+        </button>
+    )
+}
+
 export function Header() {
     const { address, connect, disconnect, isConnecting, walletError } = useWallet()
-    const { theme, toggleTheme } = useStore()
 
     return (
         <header className="sticky top-0 z-50 border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)]/85 backdrop-blur-xl">
@@ -24,18 +52,14 @@ export function Header() {
                         <div className="text-right min-w-0">
                             <div className="text-xs sm:text-sm text-[color:var(--color-muted)] truncate">{address.slice(0, 6)}...{address.slice(-4)}</div>
                         </div>
-                        <Button variant="ghost" size="sm" onClick={toggleTheme}>
-                            {theme === 'dark' ? 'Light' : 'Dark'}
-                        </Button>
+                        <ThemeSwitch />
                         <Button variant="ghost" size="sm" onClick={disconnect}>
                             Disconnect
                         </Button>
                     </div>
                 ) : (
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" onClick={toggleTheme}>
-                            {theme === 'dark' ? 'Light' : 'Dark'}
-                        </Button>
+                        <ThemeSwitch />
                         <Button variant="primary" isLoading={isConnecting} onClick={connect}>
                             Connect Wallet
                         </Button>

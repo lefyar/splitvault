@@ -1,57 +1,87 @@
 # SplitVault
 
-On-chain shared subscription splitting on Celo / MiniPay.
+SplitVault is a Celo MiniPay-ready app for shared recurring cUSD payments.
+Users create a vault, add members, fund their own share, and the vault pays a
+verified or custom merchant wallet directly when the cycle is due.
+
+The current version focuses on the `DIRECT` route only: on-chain cUSD/MockcUSD
+funding, direct merchant wallet payout, Supabase metadata, and relayer-assisted
+upkeep. Bridge/Card style routes are future work.
+
+## Current Status
+
+- Celo Sepolia testnet flow is working with MockcUSD.
+- Custom merchant wallet flow is available.
+- Merchant registry is implemented for future verified Celo mainnet merchants.
+- Members can see their active share, funded amount, and remaining amount.
+- Relayer upkeep can check due vaults and trigger payment/refund cycles.
+- Mainnet deployment is intentionally gated until key rotation and tiny-value
+  smoke settlement are complete.
 
 ## Project Structure
 
-```
+```text
 splitvault/
 ├── packages/
-│   ├── contracts/          # Solidity smart contracts (Foundry)
-│   ├── relayer/            # Node.js backend — event listener + API bridge
-│   ├── miniapp/            # React frontend — MiniPay Mini App
-│   └── shared/             # Types, ABIs, constants shared across packages
+│   ├── contracts/   # Solidity contracts and Foundry tests
+│   ├── miniapp/     # React MiniPay/mobile-wallet frontend
+│   ├── relayer/     # Express relayer, Supabase sync, upkeep/admin APIs
+│   └── shared/      # Shared ABIs
 ├── docs/
-│   └── ARCHITECTURE.md     # Full architecture guide
-└── .env                    # Root environment variables
+│   ├── ARCHITECTURE.md        # System design and lifecycle
+│   ├── OPERATIONS.md          # Testnet, merchant registry, mainnet runbook
+│   ├── PROJECT_SUBMISSION.md  # Submission/product copy
+│   └── supabase-schema.sql    # Supabase tables, policies, seed data
+└── package.json
 ```
 
 ## Quick Start
 
-### Setup
+Install dependencies:
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Install foundry dependencies
-cd packages/contracts
-forge install OpenZeppelin/openzeppelin-contracts
-forge install foundry-rs/forge-std
-cd ../..
+npm install
 ```
 
-### Phase 1: Smart Contracts
+Run contract tests:
 
 ```bash
-# Run tests
-pnpm contracts:test
+npm run contracts:test
+```
 
-# Build
-pnpm contracts:build
+Run the relayer:
 
-# Deploy (after setting .env)
-cd packages/contracts
-forge script script/Deploy.s.sol --rpc-url alfajores --broadcast --verify
+```bash
+cd packages/relayer
+npm run dev
+```
+
+Run the miniapp:
+
+```bash
+cd packages/miniapp
+npm run dev
+```
+
+Build checks:
+
+```bash
+npm run miniapp:build
+npm run relayer:build
+npm run test --workspace packages/miniapp
+npm run test --workspace packages/relayer
 ```
 
 ## Documentation
 
-See [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for the full system design.
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Operations](./docs/OPERATIONS.md)
+- [Project Submission](./docs/PROJECT_SUBMISSION.md)
+- [Supabase Schema](./docs/supabase-schema.sql)
 
-## Roadmap
+## Mainnet Rule
 
-- **v0.2**: Smart contracts + DIRECT route MVP
-- **v0.3**: Bridge integration
-- **v0.4**: Card integration
-- **v1.0**: Mainnet + audit
+Do not deploy or run real mainnet settlement without an explicit go-ahead. Before
+mainnet, rotate exposed keys, swap only a tiny amount of CELO to cUSD, deploy the
+factory, add a controlled smoke-test merchant wallet, and settle a tiny cUSD vault
+before onboarding real merchants.

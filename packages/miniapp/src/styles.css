@@ -5,8 +5,29 @@
   --font-heading: 'Helvetica Now Display Bold', sans-serif;
   --font-body: 'Inter', sans-serif;
   --color-text: #192837;
+  --color-text-rgb: 25, 40, 55;
+  --color-bg: #F2F2EE;
+  --color-card: rgba(255, 255, 255, 0.70);
+  --color-card-solid: #ffffff;
+  --color-muted: rgba(25, 40, 55, 0.55);
+  --color-border: rgba(25, 40, 55, 0.12);
+  --color-soft: rgba(25, 40, 55, 0.08);
   --color-accent: #8719fc;
   --color-login-bg: #F2F2EE;
+}
+
+:root[data-theme='dark'] {
+  --color-text: #F4F7FB;
+  --color-text-rgb: 244, 247, 251;
+  --color-bg: #10161D;
+  --color-card: rgba(25, 33, 43, 0.82);
+  --color-card-solid: #19212B;
+  --color-muted: rgba(244, 247, 251, 0.62);
+  --color-border: rgba(244, 247, 251, 0.14);
+  --color-soft: rgba(244, 247, 251, 0.08);
+  --color-accent: #A56BFF;
+  --color-login-bg: #10161D;
+  color-scheme: dark;
 }
 
 * {
@@ -52,7 +73,7 @@ a {
 
 input,
 select {
-  color-scheme: light;
+  color-scheme: inherit;
 }
 
 /* Warm-light compatibility for older utility classes still used in screens. */
@@ -63,12 +84,12 @@ select {
 }
 
 .text-gray-600 {
-  color: rgba(25, 40, 55, 0.72) !important;
+  color: rgba(var(--color-text-rgb), 0.72) !important;
 }
 
 .text-gray-500,
 .text-gray-400 {
-  color: rgba(25, 40, 55, 0.52) !important;
+  color: rgba(var(--color-text-rgb), 0.52) !important;
 }
 
 .bg-white,
@@ -76,12 +97,12 @@ select {
 .bg-teal-50,
 .bg-blue-50,
 .bg-amber-50 {
-  background-color: rgba(255, 255, 255, 0.58) !important;
+  background-color: var(--color-card) !important;
 }
 
 .bg-gray-100,
 .bg-gray-200 {
-  background-color: rgba(25, 40, 55, 0.08) !important;
+  background-color: var(--color-soft) !important;
 }
 
 .border-gray-200,
@@ -89,7 +110,7 @@ select {
 .border-teal-200,
 .border-blue-200,
 .border-amber-200 {
-  border-color: rgba(25, 40, 55, 0.12) !important;
+  border-color: var(--color-border) !important;
 }
 
 .text-teal-950,
@@ -111,11 +132,11 @@ select {
 }
 
 ::-webkit-scrollbar-track {
-  background: #E9E7DF;
+  background: var(--color-soft);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(25, 40, 55, 0.25);
+  background: rgba(var(--color-text-rgb), 0.25);
   border-radius: 4px;
 }
 

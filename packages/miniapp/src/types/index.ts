@@ -65,7 +65,6 @@ export interface Merchant {
   description: string
   category?: string
   icon?: string
-  themeColor?: string
   suggestedCost: number
   route: PaymentRoute
   status?: 'draft' | 'verified' | 'disabled'

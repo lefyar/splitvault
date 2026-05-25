@@ -62,7 +62,6 @@ MERCHANT_SEED_NAME=Launch test wallet
 MERCHANT_SEED_DESCRIPTION=Internal direct-payout merchant for tiny production smoke tests.
 MERCHANT_SEED_CATEGORY=internal
 MERCHANT_SEED_ICON=TEST
-MERCHANT_SEED_THEME_COLOR=#0f766e
 MERCHANT_SEED_SUGGESTED_COST=1
 MERCHANT_SEED_STATUS=verified
 ```
@@ -79,7 +78,6 @@ curl -X POST "$RELAYER_BASE_URL/api/merchants" \
     "description": "Internal direct-payout merchant for tiny production smoke tests.",
     "category": "internal",
     "icon": "TEST",
-    "themeColor": "#0f766e",
     "suggestedCost": 1,
     "status": "verified",
     "paymentMethods": [

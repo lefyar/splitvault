@@ -61,7 +61,6 @@ create table if not exists merchants (
   description text not null,
   category text,
   icon text,
-  theme_color text,
   suggested_cost numeric not null default 10,
   route text not null default 'DIRECT' check (route in ('DIRECT')),
   status text not null default 'draft' check (status in ('draft', 'verified', 'disabled')),
@@ -69,9 +68,6 @@ create table if not exists merchants (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-
-alter table merchants
-  add column if not exists theme_color text;
 
 create table if not exists merchant_payment_methods (
   id uuid primary key default gen_random_uuid(),
@@ -133,8 +129,8 @@ values
   (11142220, 'MockcUSD', '0xBFa30e9f862776349b881875027990223bf122bD', 18, true)
 on conflict (chain_id, token_addr) do nothing;
 
-insert into merchants (id, name, description, category, icon, theme_color, suggested_cost, route, status, website_url)
+insert into merchants (id, name, description, category, icon, suggested_cost, route, status, website_url)
 values
-  ('launch-test-wallet', 'Launch test wallet', 'Internal direct-payout merchant for tiny production smoke tests.', 'internal', 'TEST', '#0f766e', 1, 'DIRECT', 'verified', null),
-  ('custom-direct-wallet', 'Custom direct merchant', 'Use any merchant wallet that you have independently verified.', 'custom', '0x', '#8719fc', 10, 'DIRECT', 'verified', null)
+  ('launch-test-wallet', 'Launch test wallet', 'Internal direct-payout merchant for tiny production smoke tests.', 'internal', 'TEST', 1, 'DIRECT', 'verified', null),
+  ('custom-direct-wallet', 'Custom direct merchant', 'Use any merchant wallet that you have independently verified.', 'custom', '0x', 10, 'DIRECT', 'verified', null)
 on conflict (id) do nothing;

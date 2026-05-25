@@ -204,7 +204,6 @@ export function NewVault() {
                         {merchantOptions.map((merchant) => {
                             const unavailable = merchant.route !== 'DIRECT'
                             const verifiedMethod = merchant.paymentMethods?.some((method) => method.enabled && method.mode === 'static_wallet' && method.payoutAddress)
-                            const themeColor = merchant.themeColor || '#0f766e'
                             return (
                                 <Card
                                     key={merchant.id}
@@ -212,7 +211,6 @@ export function NewVault() {
                                     onClick={() => !unavailable && setSelectedService(merchant.id)}
                                     className={`cursor-pointer border-2 transition-all relative ${selectedService === merchant.id ? 'border-gray-900 bg-gray-50' : 'border-gray-200'
                                         } ${unavailable ? 'opacity-60 cursor-not-allowed' : ''}`}
-                                    style={{ borderTopColor: selectedService === merchant.id ? themeColor : undefined, borderTopWidth: selectedService === merchant.id ? 4 : undefined }}
                                 >
                                     {unavailable && (
                                         <div className="absolute top-2 right-2">
@@ -225,8 +223,7 @@ export function NewVault() {
                                         </div>
                                     )}
                                     <div
-                                        className="mb-3 inline-flex h-10 min-w-10 items-center justify-center rounded-md px-2 text-sm font-bold text-white"
-                                        style={{ backgroundColor: themeColor }}
+                                        className="mb-3 inline-flex h-10 min-w-10 items-center justify-center rounded-md bg-teal-50 px-2 text-sm font-bold text-teal-800"
                                     >
                                         {merchant.icon || 'PAY'}
                                     </div>

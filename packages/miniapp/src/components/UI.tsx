@@ -14,13 +14,13 @@ export function Button({
     children,
     ...props
 }: ButtonProps) {
-    const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#F2F2EE] disabled:opacity-50 disabled:cursor-not-allowed'
+    const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[color:var(--color-bg)] disabled:opacity-50 disabled:cursor-not-allowed'
 
     const variantClasses = {
         primary: 'bg-primary text-[#192837] shadow-[0_4px_24px_rgba(135,25,252,0.28)] hover:scale-[1.04] hover:brightness-110 active:scale-[0.96]',
-        secondary: 'bg-[#F2F2EE] text-[#192837] border border-[#192837]/10 hover:bg-white active:bg-[#E8E6DE]',
+        secondary: 'bg-[color:var(--color-card-solid)] text-[color:var(--color-text)] border border-[color:var(--color-border)] hover:bg-[color:var(--color-card)] active:bg-[color:var(--color-soft)]',
         danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
-        ghost: 'text-[#192837]/80 hover:text-[#192837] hover:bg-[#192837]/8 active:bg-[#192837]/12',
+        ghost: 'text-[color:var(--color-muted)] hover:text-[color:var(--color-text)] hover:bg-[color:var(--color-soft)] active:bg-[color:var(--color-soft)]',
     }
 
     const sizeClasses = {
@@ -61,7 +61,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Card({ className, hoverable = false, ...props }: CardProps) {
     return (
         <div
-            className={`bg-white/70 rounded-[1.25rem] border p-5 shadow-[0_18px_60px_rgba(25,40,55,0.08)] backdrop-blur-sm ${hoverable ? 'hover:border-primary/35 hover:bg-white hover:shadow-[0_22px_70px_rgba(25,40,55,0.12)] transition-all cursor-pointer' : ''
+            className={`bg-[color:var(--color-card)] rounded-[1.25rem] border border-[color:var(--color-border)] p-5 shadow-[0_18px_60px_rgba(25,40,55,0.08)] backdrop-blur-sm ${hoverable ? 'hover:border-primary/35 hover:bg-[color:var(--color-card-solid)] hover:shadow-[0_22px_70px_rgba(25,40,55,0.12)] transition-all cursor-pointer' : ''
                 } ${className || ''}`}
             {...props}
         />
@@ -76,9 +76,9 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export function Input({ label, error, className, ...props }: InputProps) {
     return (
         <div className="flex flex-col gap-2">
-            {label && <label className="text-sm font-semibold text-[#192837]/80">{label}</label>}
+            {label && <label className="text-sm font-semibold text-[color:var(--color-muted)]">{label}</label>}
             <input
-                className={`px-4 py-2.5 border rounded-2xl bg-white/75 text-[#192837] placeholder:text-[#192837]/35 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-[#192837]/12'
+                className={`px-4 py-2.5 border rounded-2xl bg-[color:var(--color-card)] text-[color:var(--color-text)] placeholder:text-[color:var(--color-muted)] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-[color:var(--color-border)]'
                     } ${className || ''}`}
                 {...props}
             />
@@ -96,9 +96,9 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 export function Select({ label, error, options, className, ...props }: SelectProps) {
     return (
         <div className="flex flex-col gap-2">
-            {label && <label className="text-sm font-semibold text-[#192837]/80">{label}</label>}
+            {label && <label className="text-sm font-semibold text-[color:var(--color-muted)]">{label}</label>}
             <select
-                className={`px-4 py-2.5 border rounded-2xl bg-white/75 text-[#192837] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-[#192837]/12'
+                className={`px-4 py-2.5 border rounded-2xl bg-[color:var(--color-card)] text-[color:var(--color-text)] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error ? 'border-red-500' : 'border-[color:var(--color-border)]'
                     } ${className || ''}`}
                 {...props}
             >
@@ -126,9 +126,9 @@ export function ProgressBar({ current, total, label }: ProgressBarProps) {
         <div className="flex flex-col gap-2">
             {label && <div className="flex justify-between text-sm">
                 <span className="font-medium">{label}</span>
-                <span className="text-[#192837]/55">{percent}%</span>
+                <span className="text-[color:var(--color-muted)]">{percent}%</span>
             </div>}
-            <div className="w-full bg-[#192837]/10 rounded-full h-2">
+            <div className="w-full bg-[color:var(--color-soft)] rounded-full h-2">
                 <div
                     className="bg-[#8719fc] h-2 rounded-full transition-all"
                     style={{ width: `${percent}%` }}
@@ -144,7 +144,7 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 export function Badge({ variant = 'default', className, ...props }: BadgeProps) {
     const variantClasses = {
-        default: 'bg-[#192837]/8 text-[#192837]',
+        default: 'bg-[color:var(--color-soft)] text-[color:var(--color-text)]',
         success: 'bg-emerald-100 text-emerald-800',
         warning: 'bg-amber-100 text-amber-800',
         danger: 'bg-red-100 text-red-800',
@@ -167,14 +167,14 @@ interface TabsProps {
 
 export function Tabs({ tabs, activeTab, onChange }: TabsProps) {
     return (
-        <div className="flex gap-2 border-b border-[#192837]/10 overflow-x-auto">
+        <div className="flex gap-2 border-b border-[color:var(--color-border)] overflow-x-auto">
             {tabs.map((tab) => (
                 <button
                     key={tab.value}
                     onClick={() => onChange(tab.value)}
                     className={`pb-4 px-4 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === tab.value
                         ? 'text-primary border-b-2 border-primary'
-                        : 'text-[#192837]/55 hover:text-[#192837]'
+                        : 'text-[color:var(--color-muted)] hover:text-[color:var(--color-text)]'
                         }`}
                 >
                     {tab.label}
@@ -208,13 +208,13 @@ export function Accordion({ items, className = '' }: AccordionProps) {
                 return (
                     <div
                         key={index}
-                        className="bg-white/70 rounded-[1.25rem] border border-[#192837]/10 overflow-hidden"
+                        className="bg-[color:var(--color-card)] rounded-[1.25rem] border border-[color:var(--color-border)] overflow-hidden"
                     >
                         <button
                             onClick={() => handleToggle(index)}
-                            className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-white/50 transition-colors"
+                            className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-[color:var(--color-soft)] transition-colors"
                         >
-                            <span className="font-semibold text-[#192837]">{item.title}</span>
+                            <span className="font-semibold text-[color:var(--color-text)]">{item.title}</span>
                             <svg
                                 className={`w-5 h-5 text-primary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                                 fill="none"
@@ -228,7 +228,7 @@ export function Accordion({ items, className = '' }: AccordionProps) {
                             className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96' : 'max-h-0'
                                 }`}
                         >
-                            <div className="px-5 pb-4 text-[#192837]/80">
+                            <div className="px-5 pb-4 text-[color:var(--color-muted)]">
                                 {item.content}
                             </div>
                         </div>

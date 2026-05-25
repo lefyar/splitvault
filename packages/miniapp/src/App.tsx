@@ -4,6 +4,7 @@ import { Dashboard } from './pages/Dashboard'
 import { VaultDetail } from './pages/VaultDetail'
 import { NewVault } from './pages/NewVault'
 import { useWallet } from './hooks/useWallet'
+import { CUSD_LABEL } from './lib/contracts'
 import './styles.css'
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
                             <div>
                                 <h2 className="text-3xl font-bold text-gray-900">Connect your MiniPay wallet</h2>
                                 <p className="text-gray-600 mt-3">
-                                    Create shared cUSD vaults, invite members, and track subscription funding from one place.
+                                    Create shared {CUSD_LABEL} vaults, invite members, and pay merchants directly from one place.
                                 </p>
                             </div>
                         </div>

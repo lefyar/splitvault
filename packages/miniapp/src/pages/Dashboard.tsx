@@ -4,6 +4,7 @@ import { useStore } from '../store'
 import { Link } from 'react-router-dom'
 import { formatCusd, mintTestCusd } from '../lib/vaults'
 import { useWallet } from '../hooks/useWallet'
+import { ACTIVE_NETWORK_NAME, CUSD_LABEL, IS_TESTNET } from '../lib/contracts'
 
 export function Dashboard() {
     const { address, vaults, balance, isLoadingVaults } = useStore()
@@ -34,13 +35,16 @@ export function Dashboard() {
             <Card className="bg-gray-950 text-white border-0">
                 <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
                     <div>
-                        <p className="text-white text-sm font-medium">Total cUSD Balance</p>
+                        <p className="text-white text-sm font-medium">Total {CUSD_LABEL} Balance</p>
                         <h2 className="text-4xl font-bold mt-2 text-emerald-200">{formatCusd(balance)}</h2>
+                        <p className="text-xs text-gray-300 mt-2">{ACTIVE_NETWORK_NAME}</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2">
-                        <Button variant="secondary" onClick={handleMint}>
-                            Mint Test cUSD
-                        </Button>
+                        {IS_TESTNET && (
+                            <Button variant="secondary" onClick={handleMint}>
+                                Mint Test cUSD
+                            </Button>
+                        )}
                         <Link to="/vault/new" className="w-full sm:w-auto">
                             <Button variant="secondary" className="w-full sm:w-auto">
                                 New Vault
@@ -86,7 +90,7 @@ export function Dashboard() {
                             {vaults.length === 0 ? 'No vaults yet' : 'No vaults match this filter'}
                         </h3>
                         <p className="text-gray-600 mt-2 mb-5">
-                            {vaults.length === 0 ? 'Create a direct cUSD vault to start splitting a subscription.' : 'Try another status filter.'}
+                            {vaults.length === 0 ? `Create a direct ${CUSD_LABEL} vault to start splitting a subscription.` : 'Try another status filter.'}
                         </p>
                         <Link to="/vault/new">
                             <Button>Create Vault</Button>
@@ -101,7 +105,7 @@ export function Dashboard() {
                                         <div>
                                             <p className="text-sm text-gray-600">{vault.serviceName || 'Untitled Vault'}</p>
                                             <h3 className="text-lg font-semibold text-gray-900">
-                                                {formatCusd(vault.monthlyAmount)} cUSD/mo
+                                                {formatCusd(vault.monthlyAmount)} {CUSD_LABEL}/mo
                                             </h3>
                                         </div>
                                         <Badge

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Button, Input, ProgressBar, Card, Badge } from '../components/UI'
-import { isFactoryConfigured, MERCHANTS } from '../lib/contracts'
+import { ACTIVE_NETWORK_NAME, CUSD_LABEL, isFactoryConfigured, MERCHANTS } from '../lib/contracts'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
 import { assertValidAddress, createDirectVault, getProtocolBillingDay } from '../lib/vaults'
@@ -24,6 +24,7 @@ export function NewVault() {
     const [monthlyAmount, setMonthlyAmount] = useState('')
     const [billingDay, setBillingDay] = useState('')
     const [merchantAddress, setMerchantAddress] = useState('')
+    const [customServiceName, setCustomServiceName] = useState('')
 
     // Members - auto-include creator
     const [members, setMembers] = useState<{ name: string; wallet: string }[]>([])
@@ -61,6 +62,30 @@ export function NewVault() {
         }
     }
 
+    const serviceName = customServiceName.trim() || selectedMerchant?.name || ''
+    const memberCount = members.length + 1
+    const parsedMonthlyAmount = Number.parseFloat(monthlyAmount || '0')
+    const estimatedShare = Number.isFinite(parsedMonthlyAmount) && memberCount > 0
+        ? parsedMonthlyAmount / memberCount
+        : 0
+
+    const handleMerchantNext = () => {
+        setDeployError(null)
+        try {
+            assertValidAddress(merchantAddress, 'Merchant wallet')
+        } catch (err) {
+            setDeployError(err instanceof Error ? err.message : String(err))
+            return
+        }
+
+        if (!serviceName) {
+            setDeployError('Add a merchant or service name.')
+            return
+        }
+
+        setStep(3)
+    }
+
     const removeMember = (idx: number) => {
         const newMembers = members.filter((_, i) => i !== idx)
         setMembers(newMembers)
@@ -88,7 +113,7 @@ export function NewVault() {
             setIsDeploying(true)
             const vaultAddress = await createDirectVault({
                 creator: address,
-                serviceName: selectedMerchant.name,
+                serviceName,
                 monthlyAmount,
                 billingDay: Number(billingDay),
                 merchantAddress: assertValidAddress(merchantAddress, 'Merchant wallet'),
@@ -126,8 +151,8 @@ export function NewVault() {
             {step === 1 && (
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Choose a Service</h2>
-                        <p className="text-gray-600 mt-2">Select the subscription you want to split</p>
+                        <h2 className="text-2xl font-bold text-gray-900">Choose Direct Merchant Type</h2>
+                        <p className="text-gray-600 mt-2">Pick a template, then enter the real merchant wallet that will receive {CUSD_LABEL}.</p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -146,9 +171,12 @@ export function NewVault() {
                                             <Badge variant="warning">Soon</Badge>
                                         </div>
                                     )}
-                                    <div className="text-4xl mb-3">{merchant.icon}</div>
+                                    <div className="mb-3 inline-flex h-10 min-w-10 items-center justify-center rounded-md bg-teal-50 px-2 text-sm font-bold text-teal-800">
+                                        {merchant.icon}
+                                    </div>
                                     <h3 className="font-semibold text-gray-900">{merchant.name}</h3>
-                                    <p className="text-sm text-gray-600 mt-2">${merchant.suggestedCost}/mo</p>
+                                    <p className="text-sm text-gray-600 mt-2">{merchant.description}</p>
+                                    <p className="text-xs text-gray-500 mt-3">Starts around {merchant.suggestedCost} {CUSD_LABEL}/mo</p>
                                     {merchant.route !== 'DIRECT' && <p className="text-xs text-gray-500 mt-1">{merchant.route}</p>}
                                 </Card>
                             )
@@ -157,7 +185,7 @@ export function NewVault() {
 
                     <Card className="bg-teal-50 border-teal-200">
                         <p className="text-sm text-teal-950">
-                            DIRECT vaults are active on Celo Sepolia with MockcUSD. Bridge and Card are hidden until this flow is settled.
+                            DIRECT vaults are the production path for now. Members fund the vault and the contract sends {CUSD_LABEL} directly to the merchant wallet on {ACTIVE_NETWORK_NAME}.
                         </p>
                     </Card>
 
@@ -184,32 +212,49 @@ export function NewVault() {
             {step === 2 && (
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Payment Route</h2>
+                        <h2 className="text-2xl font-bold text-gray-900">Merchant Details</h2>
                         <p className="text-gray-600 mt-2">
-                            {selectedMerchant?.name} • {route}
+                            {selectedMerchant?.name} • {route} • {ACTIVE_NETWORK_NAME}
                         </p>
                     </div>
 
                     <Card className="border-l-4 border-teal-600 bg-teal-50">
                         <div className="space-y-4">
-                            <p className="text-sm font-medium text-teal-950">Direct Transfer</p>
-                            <p className="text-xs text-teal-800">
-                                Members fund the vault with MockcUSD on Celo Sepolia. On billing day, the vault transfers the total directly to the merchant wallet.
-                            </p>
+                            <div>
+                                <p className="text-sm font-medium text-teal-950">Direct {CUSD_LABEL} Transfer</p>
+                                <p className="text-xs text-teal-800 mt-1">
+                                    On billing day, the vault transfers the funded total directly to this merchant wallet.
+                                </p>
+                            </div>
+                            <Input
+                                label="Merchant or service name"
+                                value={customServiceName}
+                                onChange={(event) => setCustomServiceName(event.target.value)}
+                                placeholder={selectedMerchant?.name || 'Netflix family plan'}
+                            />
                             <Input
                                 label="Merchant wallet"
                                 value={merchantAddress}
                                 onChange={(event) => setMerchantAddress(event.target.value)}
                                 placeholder="0x..."
                             />
+                            <p className="text-xs text-teal-800">
+                                Use a wallet address you control for launch testing. For a real merchant, confirm they can receive {CUSD_LABEL} on {ACTIVE_NETWORK_NAME}.
+                            </p>
                         </div>
                     </Card>
+
+                    {deployError && (
+                        <Card className="bg-red-50 border-red-200">
+                            <p className="text-sm text-red-900">{deployError}</p>
+                        </Card>
+                    )}
 
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Button variant="secondary" onClick={() => setStep(1)} className="flex-1">
                             Back
                         </Button>
-                        <Button onClick={() => setStep(3)} disabled={!merchantAddress} className="flex-1">
+                        <Button onClick={handleMerchantNext} disabled={!merchantAddress} className="flex-1">
                             Next
                         </Button>
                     </div>
@@ -234,9 +279,9 @@ export function NewVault() {
                     <Card className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="text-sm font-medium text-gray-700">Monthly Amount (cUSD)</label>
+                                <label className="text-sm font-medium text-gray-700">Monthly Amount ({CUSD_LABEL})</label>
                                 <Input value={monthlyAmount} onChange={(event) => setMonthlyAmount(event.target.value)} className="mt-2" />
-                                <p className="text-xs text-gray-500 mt-1">Set low values for Sepolia tests.</p>
+                                <p className="text-xs text-gray-500 mt-1">Use tiny values for mainnet launch tests.</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-gray-700">Billing Day</label>
@@ -255,7 +300,7 @@ export function NewVault() {
                                 <p className="font-medium text-gray-900">You (Creator)</p>
                                 <p className="text-xs text-gray-600">{address}</p>
                                 <p className="text-xs text-gray-600 mt-1">
-                                    {((100 / (members.length + 1)).toFixed(2))}% • ${((parseFloat(monthlyAmount) / (members.length + 1)).toFixed(2))}
+                                    {((100 / memberCount).toFixed(2))}% • {estimatedShare.toFixed(2)} {CUSD_LABEL}
                                 </p>
                             </div>
                             <Badge variant="success">Creator</Badge>
@@ -270,7 +315,7 @@ export function NewVault() {
                                             <p className="font-medium text-gray-900">{m.name}</p>
                                             <p className="text-xs text-gray-600">{m.wallet}</p>
                                             <p className="text-xs text-gray-600 mt-1">
-                                                {((100 / (members.length + 1)).toFixed(2))}% • ${((parseFloat(monthlyAmount) / (members.length + 1)).toFixed(2))}
+                                                {((100 / memberCount).toFixed(2))}% • {estimatedShare.toFixed(2)} {CUSD_LABEL}
                                             </p>
                                         </div>
                                         <button onClick={() => removeMember(idx)} className="text-red-600 hover:text-red-800 ml-2">
@@ -313,11 +358,11 @@ export function NewVault() {
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             <div>
                                 <p className="text-sm text-gray-600">Service</p>
-                                <p className="font-semibold text-gray-900 mt-1">{selectedMerchant?.name}</p>
+                                <p className="font-semibold text-gray-900 mt-1">{serviceName}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Monthly Cost</p>
-                                <p className="font-semibold text-gray-900 mt-1">${monthlyAmount}</p>
+                                <p className="font-semibold text-gray-900 mt-1">{monthlyAmount} {CUSD_LABEL}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Payment Route</p>
@@ -339,7 +384,7 @@ export function NewVault() {
                             </div>
                             <div className="text-right">
                                 <p className="font-semibold text-gray-900">{((100 / (members.length + 1)).toFixed(2))}%</p>
-                                <p className="text-xs text-gray-600">${((parseFloat(monthlyAmount) / (members.length + 1)).toFixed(2))}</p>
+                                <p className="text-xs text-gray-600">{estimatedShare.toFixed(2)} {CUSD_LABEL}</p>
                             </div>
                         </div>
 
@@ -351,7 +396,7 @@ export function NewVault() {
                                 </div>
                                 <div className="text-right">
                                     <p className="font-semibold text-gray-900">{((100 / (members.length + 1)).toFixed(2))}%</p>
-                                    <p className="text-xs text-gray-600">${((parseFloat(monthlyAmount) / (members.length + 1)).toFixed(2))}</p>
+                                    <p className="text-xs text-gray-600">{estimatedShare.toFixed(2)} {CUSD_LABEL}</p>
                                 </div>
                             </div>
                         ))}
@@ -360,11 +405,11 @@ export function NewVault() {
                     <Card className="bg-gray-50 space-y-2">
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Network</span>
-                            <span className="font-medium">Celo L2</span>
+                            <span className="font-medium">{ACTIVE_NETWORK_NAME}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Est. Gas Fee</span>
-                            <span className="font-medium">~$0.10</span>
+                            <span className="text-gray-600">Merchant wallet</span>
+                            <span className="font-medium break-all text-right">{merchantAddress}</span>
                         </div>
                     </Card>
 

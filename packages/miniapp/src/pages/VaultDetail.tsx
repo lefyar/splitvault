@@ -5,6 +5,7 @@ import { Card } from '../components/UI'
 import { useStore } from '../store'
 import { formatCusd, fundUserShare, getVaultHistory, mintTestCusd, runFactoryUpkeep, type VaultHistoryItem } from '../lib/vaults'
 import { useWallet } from '../hooks/useWallet'
+import { ACTIVE_EXPLORER_URL, ACTIVE_NETWORK_NAME, CUSD_LABEL, IS_TESTNET } from '../lib/contracts'
 
 export function VaultDetail() {
     const [activeTab, setActiveTab] = useState('members')
@@ -106,6 +107,7 @@ export function VaultDetail() {
                     <Card>
                         <p className="text-gray-600 text-sm">Monthly Cost</p>
                         <h3 className="text-2xl font-bold text-gray-900 mt-2">{formatCusd(vault.monthlyAmount)}</h3>
+                        <p className="text-xs text-gray-500 mt-1">{CUSD_LABEL}</p>
                     </Card>
                     <Card>
                         <p className="text-gray-600 text-sm">Members</p>
@@ -118,6 +120,7 @@ export function VaultDetail() {
                     <Card>
                         <p className="text-gray-600 text-sm">Route</p>
                         <h3 className="text-lg font-bold text-gray-900 mt-2">{vault.route}</h3>
+                        <p className="text-xs text-gray-500 mt-1">{ACTIVE_NETWORK_NAME}</p>
                     </Card>
                 </div>
 
@@ -126,7 +129,7 @@ export function VaultDetail() {
                         <div>
                             <p className="text-gray-600 text-sm">Funding Progress</p>
                             <h3 className="text-2xl font-bold text-gray-900">
-                                {formatCusd(vault.fundingStatus.totalFunded)} / {formatCusd(vault.fundingStatus.totalRequired)} cUSD
+                                {formatCusd(vault.fundingStatus.totalFunded)} / {formatCusd(vault.fundingStatus.totalRequired)} {CUSD_LABEL}
                             </h3>
                         </div>
                     </div>
@@ -136,7 +139,7 @@ export function VaultDetail() {
                     </p>
                     {vault.userShare && !vault.userFunded && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <Button className="w-full" variant="secondary" onClick={handleMint}>Mint Test cUSD</Button>
+                            {IS_TESTNET && <Button className="w-full" variant="secondary" onClick={handleMint}>Mint Test cUSD</Button>}
                             <Button className="w-full" onClick={handleFund}>Fund Your Share</Button>
                         </div>
                     )}
@@ -171,7 +174,7 @@ export function VaultDetail() {
                                     </div>
                                     <div className="text-right">
                                         <p className="font-medium text-gray-900">{(member.sharePercent / 10000).toFixed(2)}%</p>
-                                        <p className="text-sm text-gray-600">{formatCusd(member.shareAmount)} cUSD</p>
+                                        <p className="text-sm text-gray-600">{formatCusd(member.shareAmount)} {CUSD_LABEL}</p>
                                         <Badge variant={member.funded ? 'success' : 'warning'} className="mt-2">
                                             {member.funded ? 'Funded' : 'Pending'}
                                         </Badge>
@@ -185,7 +188,18 @@ export function VaultDetail() {
                         <div className="space-y-4">
                             <div className="p-4 bg-teal-50 border border-teal-200 rounded-md">
                                 <p className="font-medium text-teal-950">{vault.route} Route</p>
-                                <p className="text-sm text-teal-800 mt-2 break-all">Merchant wallet: {vault.merchantAddress}</p>
+                                <p className="text-sm text-teal-800 mt-2">
+                                    The vault pays the funded total directly to the merchant wallet in {CUSD_LABEL}.
+                                </p>
+                                <p className="text-sm text-teal-800 mt-3 break-all">Merchant wallet: {vault.merchantAddress}</p>
+                                <a
+                                    className="text-xs text-teal-700 break-all mt-2 block"
+                                    href={`${ACTIVE_EXPLORER_URL}/address/${vault.merchantAddress}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    View merchant wallet
+                                </a>
                             </div>
                         </div>
                     )}
@@ -215,11 +229,11 @@ export function VaultDetail() {
                                             )}
                                             {item.actor && <p className="text-xs text-gray-500 break-all mt-1">{item.actor}</p>}
                                         </div>
-                                        {item.amount !== undefined && <p className="text-sm font-semibold text-teal-800">{formatCusd(item.amount)} cUSD</p>}
+                                        {item.amount !== undefined && <p className="text-sm font-semibold text-teal-800">{formatCusd(item.amount)} {CUSD_LABEL}</p>}
                                     </div>
                                     <a
                                         className="text-xs text-teal-700 break-all mt-2 block"
-                                        href={`https://celo-sepolia.blockscout.com/tx/${item.transactionHash}`}
+                                        href={`${ACTIVE_EXPLORER_URL}/tx/${item.transactionHash}`}
                                         target="_blank"
                                         rel="noreferrer"
                                     >

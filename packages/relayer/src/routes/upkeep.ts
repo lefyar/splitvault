@@ -37,6 +37,10 @@ function isAddress(value: unknown): value is Address {
   return typeof value === 'string' && /^0x[a-fA-F0-9]{40}$/.test(value)
 }
 
+function isPrivateKey(value: unknown): value is Address {
+  return typeof value === 'string' && /^0x[a-fA-F0-9]{64}$/.test(value)
+}
+
 function getChainId() {
   return Number(process.env.CELO_CHAIN_ID || process.env.VITE_CELO_CHAIN_ID || CELO_SEPOLIA_CHAIN_ID)
 }
@@ -60,8 +64,11 @@ function getFactoryAddress(): Address {
 }
 
 function getRelayerPrivateKey(): Address {
-  const key = process.env.RELAYER_PRIVATE_KEY
-  if (!isAddress(key)) throw new Error('RELAYER_PRIVATE_KEY is required')
+  const rawKey = process.env.RELAYER_PRIVATE_KEY
+  if (!rawKey) throw new Error('RELAYER_PRIVATE_KEY is required')
+
+  const key = rawKey.startsWith('0x') ? rawKey : `0x${rawKey}`
+  if (!isPrivateKey(key)) throw new Error('RELAYER_PRIVATE_KEY must be a 32-byte hex private key')
   return key
 }
 

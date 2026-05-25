@@ -8,7 +8,6 @@ interface AppStore {
   isConnecting: boolean
   isConnected: boolean
   walletError: string | null
-  theme: 'light' | 'dark'
 
   // Vault state
   vaults: VaultWithMeta[]
@@ -21,8 +20,6 @@ interface AppStore {
   setConnecting: (connecting: boolean) => void
   setConnected: (connected: boolean) => void
   setWalletError: (error: string | null) => void
-  setTheme: (theme: 'light' | 'dark') => void
-  toggleTheme: () => void
   setVaults: (vaults: VaultWithMeta[]) => void
   addVault: (vault: VaultWithMeta) => void
   setActiveVault: (id: Address | null) => void
@@ -37,7 +34,6 @@ export const useStore = create<AppStore>((set) => ({
   isConnecting: false,
   isConnected: false,
   walletError: null,
-  theme: (typeof localStorage !== 'undefined' && localStorage.getItem('splitvault-theme') === 'dark') ? 'dark' : 'light',
   vaults: [],
   activeVaultId: null,
   isLoadingVaults: false,
@@ -48,17 +44,6 @@ export const useStore = create<AppStore>((set) => ({
   setConnecting: (connecting) => set({ isConnecting: connecting }),
   setConnected: (connected) => set({ isConnected: connected }),
   setWalletError: (error) => set({ walletError: error }),
-  setTheme: (theme) => {
-    localStorage.setItem('splitvault-theme', theme)
-    document.documentElement.dataset.theme = theme
-    set({ theme })
-  },
-  toggleTheme: () => set((state) => {
-    const theme = state.theme === 'dark' ? 'light' : 'dark'
-    localStorage.setItem('splitvault-theme', theme)
-    document.documentElement.dataset.theme = theme
-    return { theme }
-  }),
   setVaults: (vaults) => set({ vaults }),
   addVault: (vault) => set((state) => ({ vaults: [...state.vaults, vault] })),
   setActiveVault: (id) => set({ activeVaultId: id }),

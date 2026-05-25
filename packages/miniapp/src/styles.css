@@ -16,20 +16,6 @@
   --color-login-bg: #F2F2EE;
 }
 
-:root[data-theme='dark'] {
-  --color-text: #F4F7FB;
-  --color-text-rgb: 244, 247, 251;
-  --color-bg: #10161D;
-  --color-card: rgba(25, 33, 43, 0.82);
-  --color-card-solid: #19212B;
-  --color-muted: rgba(244, 247, 251, 0.62);
-  --color-border: rgba(244, 247, 251, 0.14);
-  --color-soft: rgba(244, 247, 251, 0.08);
-  --color-accent: #A56BFF;
-  --color-login-bg: #10161D;
-  color-scheme: dark;
-}
-
 * {
   box-sizing: border-box;
   font-family: var(--font-body);
@@ -73,7 +59,7 @@ a {
 
 input,
 select {
-  color-scheme: inherit;
+  color-scheme: light;
 }
 
 /* Warm-light compatibility for older utility classes still used in screens. */

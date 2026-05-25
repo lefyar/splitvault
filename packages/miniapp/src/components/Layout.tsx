@@ -2,36 +2,6 @@ import React from 'react'
 import { useWallet } from '../hooks/useWallet'
 import { Button, Card } from './UI'
 import { ACTIVE_NETWORK_NAME } from '../lib/contracts'
-import { useStore } from '../store'
-
-function ThemeSwitch() {
-    const { theme, toggleTheme } = useStore()
-    const isDark = theme === 'dark'
-
-    return (
-        <button
-            type="button"
-            role="switch"
-            aria-checked={isDark}
-            aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-            onClick={toggleTheme}
-            className="relative inline-flex h-9 w-[4.75rem] shrink-0 items-center rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-card)] p-1 shadow-[0_8px_28px_rgba(25,40,55,0.08)] transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[color:var(--color-bg)]"
-        >
-            <span
-                className={`absolute text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors ${isDark ? 'left-2 text-[color:var(--color-muted)]' : 'left-[2.35rem] text-[color:var(--color-muted)]'
-                    }`}
-            >
-                {isDark ? 'Dark' : 'Light'}
-            </span>
-            <span
-                className={`grid h-7 w-7 place-items-center rounded-full bg-[color:var(--color-text)] text-[color:var(--color-bg)] text-sm shadow-sm transition-transform ${isDark ? 'translate-x-10' : 'translate-x-0'
-                    }`}
-            >
-                {isDark ? 'D' : 'L'}
-            </span>
-        </button>
-    )
-}
 
 export function Header() {
     const { address, connect, disconnect, isConnecting, walletError } = useWallet()
@@ -52,14 +22,12 @@ export function Header() {
                         <div className="text-right min-w-0">
                             <div className="text-xs sm:text-sm text-[color:var(--color-muted)] truncate">{address.slice(0, 6)}...{address.slice(-4)}</div>
                         </div>
-                        <ThemeSwitch />
                         <Button variant="ghost" size="sm" onClick={disconnect}>
                             Disconnect
                         </Button>
                     </div>
                 ) : (
                     <div className="flex items-center gap-2">
-                        <ThemeSwitch />
                         <Button variant="primary" isLoading={isConnecting} onClick={connect}>
                             Connect Wallet
                         </Button>
@@ -81,11 +49,32 @@ export function Header() {
 }
 
 export function Footer() {
+    const legalLinks = [
+        { label: 'MiniPay Terms', href: 'https://minipay.to/terms-of-service' },
+        { label: 'MiniPay Privacy', href: 'https://minipay.to/privacy-statement' },
+        { label: 'Celo Terms', href: 'https://celo.org/user-agreement' },
+        { label: 'Celo Privacy', href: 'https://celo.org/privacy-policy' },
+        { label: 'Celo Mainnet Disclaimer', href: 'https://docs.celo.org/network/mainnet/disclaimer' },
+    ]
+
     return (
         <footer className="border-t border-[color:var(--color-border)] mt-12 py-6">
-            <div className="max-w-6xl mx-auto px-4 text-center text-sm text-[color:var(--color-muted)]">
+            <div className="max-w-6xl mx-auto px-4 text-center text-sm text-[color:var(--color-muted)] space-y-3">
                 <p>Split crypto-native SaaS payments on Celo</p>
-                <p className="mt-2 text-xs">Direct merchant route only</p>
+                <p className="text-xs">Direct merchant route only</p>
+                <nav aria-label="Platform legal links" className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
+                    {legalLinks.map((link) => (
+                        <a
+                            key={link.href}
+                            href={link.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:text-[color:var(--color-text)] underline-offset-4 hover:underline"
+                        >
+                            {link.label}
+                        </a>
+                    ))}
+                </nav>
             </div>
         </footer>
     )

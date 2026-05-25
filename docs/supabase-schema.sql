@@ -16,6 +16,10 @@ create table if not exists vaults (
   updated_at timestamptz not null default now()
 );
 
+alter table vaults
+  add column if not exists merchant_id text,
+  add column if not exists payment_method_id uuid;
+
 create table if not exists vault_members (
   id uuid primary key default gen_random_uuid(),
   vault_addr text not null references vaults(contract_addr) on delete cascade,
@@ -84,26 +88,32 @@ alter table payment_tokens enable row level security;
 alter table merchants enable row level security;
 alter table merchant_payment_methods enable row level security;
 
+drop policy if exists "vaults are readable by app users" on vaults;
 create policy "vaults are readable by app users"
   on vaults for select
   using (true);
 
+drop policy if exists "vault members are readable by app users" on vault_members;
 create policy "vault members are readable by app users"
   on vault_members for select
   using (true);
 
+drop policy if exists "payment events are readable by app users" on payment_events;
 create policy "payment events are readable by app users"
   on payment_events for select
   using (true);
 
+drop policy if exists "payment tokens are readable by app users" on payment_tokens;
 create policy "payment tokens are readable by app users"
   on payment_tokens for select
   using (enabled = true);
 
+drop policy if exists "verified merchants are readable by app users" on merchants;
 create policy "verified merchants are readable by app users"
   on merchants for select
   using (status = 'verified');
 
+drop policy if exists "merchant payment methods are readable by app users" on merchant_payment_methods;
 create policy "merchant payment methods are readable by app users"
   on merchant_payment_methods for select
   using (enabled = true);

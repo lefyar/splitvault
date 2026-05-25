@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Card, ProgressBar, Button, Badge, Accordion } from '../components/UI'
+import { Card, ProgressBar, Button, Badge, SkeletonCard } from '../components/UI'
 import { useStore } from '../store'
 import { Link } from 'react-router-dom'
 import { formatCusd, mintTestCusd } from '../lib/vaults'
@@ -40,27 +40,8 @@ export function Dashboard() {
     }, 0n)
     const userActiveRemaining = userActiveRequired > userActiveFunded ? userActiveRequired - userActiveFunded : 0n
 
-    const guideItems = [
-        {
-            title: 'How SplitVault works',
-            body: `Create a vault for a shared SaaS bill, add members, and set each cycle's ${CUSD_LABEL} amount. Members fund their own shares, then the contract pays the merchant wallet directly when the cycle is ready.`,
-        },
-        {
-            title: 'Direct merchant route',
-            body: `The current production path is direct ${CUSD_LABEL} payout. For launch, use custom merchant wallets you control or recipients that can receive ${CUSD_LABEL} on ${ACTIVE_NETWORK_NAME}.`,
-        },
-        {
-            title: 'Off-chain integrations',
-            body: 'The relayer stores vault metadata in Supabase and keeps the app readable beyond raw contract state. The next integration layer can attach merchant invoices, payment links, and verified recipient metadata before the vault executes payout.',
-        },
-        {
-            title: 'Bridge and card payments',
-            body: 'Bridge and card rails are intentionally hidden for now. They add KYC, provider setup, webhook handling, and compliance risk, so they should come after the mainnet direct route is proven.',
-        },
-    ]
-
     return (
-        <div className="space-y-7">
+        <div className="space-y-10">
             <Card className="relative overflow-hidden bg-white/70 text-[#192837] border-[#192837]/10">
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(135,25,252,0.18),transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.72),rgba(242,242,238,0.35))]" />
                 <div className="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
@@ -111,14 +92,14 @@ export function Dashboard() {
                     </Link>
                 </div>
 
-                <div className="inline-flex w-full space-x-2 sm:w-auto rounded-full border border-[#192837]/10 bg-white/65 p-2">
+                <div className="inline-flex w-full space-x-2 sm:w-auto rounded-full border border-white/10 bg-transparent p-1.5">
                     {(['all', 'active', 'pending'] as const).map((f) => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
-                            className={`flex-1 sm:flex-none px-3 py-2 rounded text-sm font-medium transition-colors ${filter === f
+                            className={`flex-1 sm:flex-none px-3 py-2 text-sm font-medium transition-colors rounded-full ${filter === f
                                 ? 'bg-[#8719fc] text-white rounded-full'
-                                : 'text-[#192837]/60 hover:bg-[#192837]/5 hover:text-[#192837] rounded-full'
+                                : 'text-white/58 hover:bg-white/[0.06] hover:text-white'
                                 }`}
                         >
                             {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Pending'}
@@ -127,18 +108,25 @@ export function Dashboard() {
                 </div>
 
                 {filteredVaults.length === 0 ? (
-                    <Card className="text-center py-12">
-                        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[#192837] text-white font-heading">S</div>
-                        <h3 className="font-heading text-[#192837] mt-4">
-                            {vaults.length === 0 ? 'No vaults yet' : 'No vaults match this filter'}
-                        </h3>
-                        <p className="text-[#192837]/60 mt-2 mb-5">
-                            {vaults.length === 0 ? `Create a direct ${CUSD_LABEL} vault for a custom merchant wallet or invoice recipient.` : 'Try another status filter.'}
-                        </p>
-                        <Link to="/vault/new">
-                            <Button>Create Vault</Button>
-                        </Link>
-                    </Card>
+                    isLoadingVaults ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <SkeletonCard />
+                            <SkeletonCard />
+                        </div>
+                    ) : (
+                        <Card className="text-center py-12">
+                            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[#192837] text-white font-heading">S</div>
+                            <h3 className="font-heading text-[#192837] mt-4">
+                                {vaults.length === 0 ? 'No vaults yet' : 'No vaults match this filter'}
+                            </h3>
+                            <p className="text-[#192837]/60 mt-2 mb-5">
+                                {vaults.length === 0 ? `Create a direct ${CUSD_LABEL} vault for a custom merchant wallet or invoice recipient.` : 'Try another status filter.'}
+                            </p>
+                            <Link to="/vault/new">
+                                <Button>Create Vault</Button>
+                            </Link>
+                        </Card>
+                    )
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {filteredVaults.map((vault) => (
@@ -204,26 +192,6 @@ export function Dashboard() {
                     </div>
                 )}
             </div>
-
-            <section className="space-y-4 pt-2">
-                <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-                    <div>
-                        <p className="text-sm font-semibold text-[#8719fc]">Guide</p>
-                        <h2 className="text-2xl font-heading text-[#192837] mt-1">How the direct route fits together</h2>
-                    </div>
-                    <p className="text-sm text-[#192837]/60 max-w-xl">
-                        SplitVault is on-chain for custody and payout, with off-chain services used only for metadata, discovery, and future merchant integrations.
-                    </p>
-                </div>
-
-                <Accordion
-                    items={guideItems.map(item => ({
-                        title: item.title,
-                        content: item.body
-                    }))}
-                    className="space-y-2"
-                />
-            </section>
         </div>
     )
 }

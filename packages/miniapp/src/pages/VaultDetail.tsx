@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Button, Badge, ProgressBar, Tabs } from '../components/UI'
+import { Button, Badge, ProgressBar, Tabs, Skeleton, SkeletonCard } from '../components/UI'
 import { Card } from '../components/UI'
 import { useStore } from '../store'
 import { assertValidAddress, formatCusd, fundUserShare, getVaultHistory, loadVaultByAddress, mintTestCusd, runFactoryUpkeep, saveImportedVaultMetadata, type VaultHistoryItem } from '../lib/vaults'
@@ -13,6 +13,7 @@ export function VaultDetail() {
     const [txStatus, setTxStatus] = useState<string | null>(null)
     const [history, setHistory] = useState<VaultHistoryItem[]>([])
     const [isLoadingHistory, setIsLoadingHistory] = useState(false)
+    const [historyError, setHistoryError] = useState<string | null>(null)
     const [directVault, setDirectVault] = useState<VaultWithMeta | null>(null)
     const [isLoadingDirectVault, setIsLoadingDirectVault] = useState(false)
     const { id } = useParams()
@@ -51,10 +52,13 @@ export function VaultDetail() {
 
         const loadHistory = async () => {
             setIsLoadingHistory(true)
+            setHistoryError(null)
             try {
                 setHistory(await getVaultHistory(vault.id))
             } catch (err) {
-                setTxStatus(err instanceof Error ? err.message : String(err))
+                console.warn('Failed to load vault history:', err)
+                setHistory([])
+                setHistoryError('History is taking too long to load from the Celo RPC. Funding and payout still work; try again in a moment.')
             } finally {
                 setIsLoadingHistory(false)
             }
@@ -64,11 +68,30 @@ export function VaultDetail() {
     }, [activeTab, vault?.id])
 
     if (!vault) {
+        if (isLoadingDirectVault) {
+            return (
+                <div className="space-y-6">
+                    <Skeleton className="h-9 w-40 rounded-full" />
+                    <div className="space-y-4">
+                        <Skeleton className="h-10 w-72" />
+                        <Skeleton className="h-5 w-full max-w-xl" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <SkeletonCard rows={1} />
+                        <SkeletonCard rows={1} />
+                        <SkeletonCard rows={1} />
+                        <SkeletonCard rows={1} />
+                    </div>
+                    <SkeletonCard rows={4} />
+                </div>
+            )
+        }
+
         return (
             <Card className="text-center py-12">
-                <h1 className="text-2xl font-bold text-gray-900">{isLoadingDirectVault ? 'Loading vault...' : 'Vault not found'}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Vault not found</h1>
                 <p className="text-gray-600 mt-2 mb-5">
-                    {isLoadingDirectVault ? 'Reading this vault directly from Celo.' : txStatus || 'This vault is not loaded in the miniapp yet.'}
+                    {txStatus || 'This vault is not loaded in the miniapp yet.'}
                 </p>
                 <Link to="/">
                     <Button>Back to Dashboard</Button>
@@ -116,7 +139,12 @@ export function VaultDetail() {
         try {
             await runFactoryUpkeep(address)
             await Promise.all([loadVaults(), updateBalance()])
-            setHistory(await getVaultHistory(vault.id))
+            getVaultHistory(vault.id)
+                .then(setHistory)
+                .catch((err) => {
+                    console.warn('Failed to refresh vault history:', err)
+                    setHistoryError('Upkeep completed, but history refresh timed out. Try the History tab again in a moment.')
+                })
             setTxStatus('Upkeep completed')
         } catch (err) {
             setTxStatus(err instanceof Error ? err.message : String(err))
@@ -262,7 +290,13 @@ export function VaultDetail() {
                                     <p className="text-sm text-gray-600">Loading history...</p>
                                 </div>
                             )}
-                            {!isLoadingHistory && history.length === 0 && (
+                            {!isLoadingHistory && historyError && (
+                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-md">
+                                    <p className="font-medium text-amber-950">History unavailable</p>
+                                    <p className="text-sm text-amber-900 mt-1">{historyError}</p>
+                                </div>
+                            )}
+                            {!isLoadingHistory && !historyError && history.length === 0 && (
                                 <div className="p-4 bg-gray-50 rounded-md">
                                     <p className="font-medium text-gray-900">No payment history yet</p>
                                     <p className="text-sm text-gray-600 mt-1">Funding and payment events will appear here.</p>

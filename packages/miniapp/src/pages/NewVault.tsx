@@ -188,7 +188,7 @@ export function NewVault() {
                     {[1, 2, 3, 4].map((s) => (
                         <div
                             key={s}
-                            className={`flex-1 h-1 rounded-full ${s <= (step > 4 ? 4 : step) ? 'bg-gray-900' : 'bg-gray-200'}`}
+                            className={`flex-1 h-1 rounded-full ${s <= (step > 4 ? 4 : step) ? 'bg-[color:var(--color-accent)]' : 'bg-[color:var(--color-soft)]'}`}
                         />
                     ))}
                 </div>
@@ -211,7 +211,7 @@ export function NewVault() {
                                     key={merchant.id}
                                     hoverable={!unavailable}
                                     onClick={() => !unavailable && setSelectedService(merchant.id)}
-                                    className={`cursor-pointer border-2 transition-all relative ${selectedService === merchant.id ? 'border-gray-900 bg-gray-50' : 'border-gray-200'
+                                    className={`cursor-pointer border-2 transition-all relative ${selectedService === merchant.id ? 'border-[color:var(--color-accent)] bg-white/[0.09] shadow-[0_0_0_1px_rgba(135,25,252,0.28)]' : 'border-[color:var(--color-border)]'
                                         } ${unavailable ? 'opacity-60 cursor-not-allowed' : ''}`}
                                 >
                                     {unavailable && (

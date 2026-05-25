@@ -6,6 +6,7 @@ import { fetchVaultMetadata, saveVaultMetadata, type VaultMetadata } from './api
 
 const DIRECT_ROUTE = 0
 const ZERO_BYTES = '0x'
+const HISTORY_BLOCK_WINDOW = 250_000n
 
 export interface VaultHistoryItem {
   id: string
@@ -369,22 +370,27 @@ export async function runFactoryUpkeep(user: Address) {
 
 export async function getVaultHistory(vaultAddress: Address): Promise<VaultHistoryItem[]> {
   const client = getPublicClient()
-  const fromBlock = 0n
+  const latestBlock = await client.getBlockNumber()
+  const fromBlock = latestBlock > HISTORY_BLOCK_WINDOW ? latestBlock - HISTORY_BLOCK_WINDOW : 0n
+  const toBlock = latestBlock
   const [fundedLogs, paymentLogs, refundLogs] = await Promise.all([
     client.getLogs({
       address: vaultAddress,
       event: parseAbiItem('event MemberFunded(address indexed member, uint256 amount, uint256 timestamp)'),
       fromBlock,
+      toBlock,
     }),
     client.getLogs({
       address: vaultAddress,
       event: parseAbiItem('event PaymentExecuted(uint256 amount, uint8 route, uint256 timestamp)'),
       fromBlock,
+      toBlock,
     }),
     client.getLogs({
       address: vaultAddress,
       event: parseAbiItem('event CycleRefunded(uint256 timestamp)'),
       fromBlock,
+      toBlock,
     }),
   ])
 

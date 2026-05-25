@@ -3,6 +3,7 @@ import express from 'express'
 import { paymentExecutedRouter } from './routes/paymentExecuted.js'
 import { vaultsRouter } from './routes/vaults.js'
 import { merchantsRouter } from './routes/merchants.js'
+import { startUpkeepScheduler, upkeepRouter } from './routes/upkeep.js'
 import { bridgeRouter } from './handlers/bridge.js'
 
 dotenv.config({ path: '../../.env.local' })
@@ -24,6 +25,7 @@ app.get('/healthz', (_req, res) => {
 
 app.use('/api/vaults', vaultsRouter)
 app.use('/api/merchants', merchantsRouter)
+app.use('/api/upkeep', upkeepRouter)
 
 if (bridgeCardEnabled) {
   app.use('/api/bridge', bridgeRouter)
@@ -36,4 +38,5 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000
 app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`[relayer] listening on :${port}`)
+  startUpkeepScheduler()
 })

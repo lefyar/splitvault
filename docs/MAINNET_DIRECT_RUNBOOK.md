@@ -208,3 +208,30 @@ Before mainnet settlement:
 - Mainnet factory is deployed with real cUSD only after explicit approval.
 - Mainnet merchant registry has a verified `static_wallet` cUSD method.
 - First settlement uses a tiny cUSD amount and a wallet we control.
+
+Relayer upkeep endpoints:
+
+```bash
+curl "$RELAYER_BASE_URL/api/upkeep/status" \
+  -H "Authorization: Bearer $MERCHANT_ADMIN_TOKEN"
+```
+
+```bash
+curl -X POST "$RELAYER_BASE_URL/api/upkeep/run" \
+  -H "Authorization: Bearer $MERCHANT_ADMIN_TOKEN"
+```
+
+`/api/upkeep/run` checks `checkUpkeep(0x)` first and only sends a transaction when the factory reports that upkeep is needed. Use this as the cron fallback behind Gelato or another keeper.
+
+Railway built-in cron fallback:
+
+```bash
+ENABLE_UPKEEP_CRON=true
+UPKEEP_INTERVAL_MS=300000
+```
+
+For mainnet, the relayer refuses to broadcast upkeep unless this is also set:
+
+```bash
+ALLOW_MAINNET_UPKEEP=true
+```

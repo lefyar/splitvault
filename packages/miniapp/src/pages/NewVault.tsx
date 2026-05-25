@@ -56,13 +56,15 @@ export function NewVault() {
                     setMerchantRegistryStatus(null)
                 } else {
                     setMerchantOptions(MERCHANTS)
-                    setMerchantRegistryStatus('No verified merchants are configured yet. Using manual direct-wallet templates.')
+                    setSelectedService((current) => current || customMerchantTemplate?.id || null)
+                    setMerchantRegistryStatus('No verified registry merchants are configured for this token yet. Custom wallet mode is available.')
                 }
             } catch (err) {
                 if (cancelled) return
                 console.warn('Falling back to local merchant templates:', err)
                 setMerchantOptions(MERCHANTS)
-                setMerchantRegistryStatus('Merchant registry unavailable. Using manual direct-wallet templates.')
+                setSelectedService((current) => current || customMerchantTemplate?.id || null)
+                setMerchantRegistryStatus('Merchant registry unavailable. Custom wallet mode is available.')
             }
         }
 

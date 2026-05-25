@@ -29,6 +29,16 @@ export function Dashboard() {
         if (filter === 'pending') return !vault.fundingStatus.funded
         return true
     })
+    const activeVaults = vaults.filter((vault) => vault.cycleActive)
+    const userActiveRequired = activeVaults.reduce((sum, vault) => {
+        const member = vault.members.find((item) => item.wallet.toLowerCase() === address?.toLowerCase())
+        return sum + (member?.shareAmount || 0n)
+    }, 0n)
+    const userActiveFunded = activeVaults.reduce((sum, vault) => {
+        const member = vault.members.find((item) => item.wallet.toLowerCase() === address?.toLowerCase())
+        return sum + (member?.funded ? member.shareAmount : 0n)
+    }, 0n)
+    const userActiveRemaining = userActiveRequired > userActiveFunded ? userActiveRequired - userActiveFunded : 0n
 
     const guideItems = [
         {
@@ -69,6 +79,24 @@ export function Dashboard() {
                 </div>
                 {mintStatus && <p className="relative text-sm text-[#192837]/65 mt-4">{mintStatus}</p>}
             </Card>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Card>
+                    <p className="text-[#192837]/55 text-sm">Your Active Shares</p>
+                    <h3 className="text-2xl font-heading text-[#192837] mt-2">{formatCusd(userActiveRequired)}</h3>
+                    <p className="text-xs text-[#192837]/45 mt-1">{CUSD_LABEL} across active vaults</p>
+                </Card>
+                <Card>
+                    <p className="text-[#192837]/55 text-sm">Funded This Cycle</p>
+                    <h3 className="text-2xl font-heading text-[#192837] mt-2">{formatCusd(userActiveFunded)}</h3>
+                    <p className="text-xs text-[#192837]/45 mt-1">{CUSD_LABEL} already deposited</p>
+                </Card>
+                <Card>
+                    <p className="text-[#192837]/55 text-sm">Remaining To Fund</p>
+                    <h3 className="text-2xl font-heading text-[#192837] mt-2">{formatCusd(userActiveRemaining)}</h3>
+                    <p className="text-xs text-[#192837]/45 mt-1">{CUSD_LABEL} still needed</p>
+                </Card>
+            </div>
 
             <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -116,6 +144,13 @@ export function Dashboard() {
                         {filteredVaults.map((vault) => (
                             <Link key={vault.id} to={`/vault/${vault.id}`}>
                                 <Card hoverable className="space-y-4">
+                                    {(() => {
+                                        const userMember = vault.members.find((member) => member.wallet.toLowerCase() === address?.toLowerCase())
+                                        const userShare = userMember?.shareAmount || 0n
+                                        const userFunded = userMember?.funded ? userShare : 0n
+                                        const userRemaining = userShare > userFunded ? userShare - userFunded : 0n
+                                        return (
+                                            <>
                                     <div className="flex items-start justify-between">
                                         <div>
                                             <p className="text-sm text-[#192837]/55">{vault.serviceName || 'Untitled Vault'}</p>
@@ -139,6 +174,14 @@ export function Dashboard() {
                                             <span className="text-[#192837]/50">Billing Day</span>
                                             <span className="font-medium text-[#192837]/85">Day {vault.billingDay}</span>
                                         </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-[#192837]/50">Your Share</span>
+                                            <span className="font-medium text-[#192837]/85">{formatCusd(userShare)} {CUSD_LABEL}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-[#192837]/50">You Funded</span>
+                                            <span className="font-medium text-[#192837]/85">{formatCusd(userFunded)} {CUSD_LABEL}</span>
+                                        </div>
                                     </div>
 
                                     <ProgressBar
@@ -147,11 +190,14 @@ export function Dashboard() {
                                         label="Funded"
                                     />
 
-                                    {!vault.fundingStatus.funded && vault.userShare && (
+                                    {userRemaining > 0n && (
                                         <Button variant="secondary" className="w-full" size="sm">
-                                            Fund Your Share
+                                            Fund {formatCusd(userRemaining)} {CUSD_LABEL}
                                         </Button>
                                     )}
+                                            </>
+                                        )
+                                    })()}
                                 </Card>
                             </Link>
                         ))}

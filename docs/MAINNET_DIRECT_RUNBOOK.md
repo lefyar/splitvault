@@ -195,3 +195,16 @@ The miniapp build was verified locally with `npm run miniapp:build`.
 - Relayer health endpoint returns `{ "ok": true }`.
 - Supabase service key is only in the relayer environment, never in `VITE_` variables.
 - Merchant address is confirmed by the merchant on Celo mainnet.
+
+## Settlement Path To Mainnet
+
+Before mainnet settlement:
+
+- Dashboard shows connected-wallet active share, funded amount, and remaining amount.
+- Member dashboard discovery is repaired for every vault in Supabase.
+- `POST /api/vaults/repair` can backfill any missing metadata from chain.
+- DIRECT `PaymentExecuted` events are recorded in `payment_events`.
+- A keeper or cron fallback calls `performUpkeep(0x)` when `checkUpkeep(0x)` says work is due.
+- Mainnet factory is deployed with real cUSD only after explicit approval.
+- Mainnet merchant registry has a verified `static_wallet` cUSD method.
+- First settlement uses a tiny cUSD amount and a wallet we control.

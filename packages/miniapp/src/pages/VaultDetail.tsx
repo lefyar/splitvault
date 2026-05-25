@@ -81,6 +81,10 @@ export function VaultDetail() {
     const required = Number(vault.fundingStatus.totalRequired)
     const deadlineMs = Number(vault.cycleDeadline) * 1000
     const isPastDeadline = Date.now() >= deadlineMs
+    const userMember = vault.members.find((member) => member.wallet.toLowerCase() === address?.toLowerCase())
+    const userRequired = userMember?.shareAmount || 0n
+    const userFunded = userMember?.funded ? userRequired : 0n
+    const userRemaining = userRequired > userFunded ? userRequired - userFunded : 0n
 
     const handleFund = async () => {
         if (!address) return
@@ -165,10 +169,26 @@ export function VaultDetail() {
                         </div>
                     </div>
                     <ProgressBar current={funded} total={required} />
+                    {userMember && (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="rounded-md border border-[#192837]/10 bg-white/60 p-3">
+                                <p className="text-xs text-gray-500">Your Share</p>
+                                <p className="font-semibold text-gray-900 mt-1">{formatCusd(userRequired)} {CUSD_LABEL}</p>
+                            </div>
+                            <div className="rounded-md border border-[#192837]/10 bg-white/60 p-3">
+                                <p className="text-xs text-gray-500">You Funded</p>
+                                <p className="font-semibold text-gray-900 mt-1">{formatCusd(userFunded)} {CUSD_LABEL}</p>
+                            </div>
+                            <div className="rounded-md border border-[#192837]/10 bg-white/60 p-3">
+                                <p className="text-xs text-gray-500">Remaining</p>
+                                <p className="font-semibold text-gray-900 mt-1">{formatCusd(userRemaining)} {CUSD_LABEL}</p>
+                            </div>
+                        </div>
+                    )}
                     <p className="text-sm text-gray-600">
                         Deadline: {new Date(deadlineMs).toLocaleString()} {isPastDeadline ? '(due)' : ''}
                     </p>
-                    {vault.userShare && !vault.userFunded && (
+                    {userRemaining > 0n && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {IS_TESTNET && <Button className="w-full" variant="secondary" onClick={handleMint}>Mint Test cUSD</Button>}
                             <Button className="w-full" onClick={handleFund}>Fund Your Share</Button>

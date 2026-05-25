@@ -7,6 +7,8 @@ This is the production path after the Celo Sepolia/mock-cUSD MVP:
 - pay merchants/services that can receive stablecoins to a wallet address
 - call `performUpkeep(0x)` when vaults are due
 
+SplitVault coordinates shared recurring cUSD payments. It does not own the external service account and does not cancel the merchant service for users. If a group stops using a service, members can stop funding future cycles; the group should also cancel or pause the actual service with the merchant.
+
 ## Merchant Fit
 
 SplitVault's current contract pays a fixed cUSD amount to one wallet address. That means the best first merchants are ones that can accept direct wallet settlement or issue stablecoin invoices, not card-only subscriptions.
@@ -45,7 +47,14 @@ The current due-date mechanism is:
 2. After `cycleDeadline`, anyone can call `VaultFactory.performUpkeep(0x)`.
 3. The factory loops through vaults.
 4. Fully funded due vaults call `executePayment()` and transfer cUSD to `merchantAddress`.
-5. Underfunded due vaults call `refundCycle()`.
+5. Underfunded due vaults call `refundCycle()`, return funded shares, and reset for the next cycle.
+
+Lifecycle expectations:
+
+- A funded due cycle pays the merchant and then waits for the relayer reset path.
+- An underfunded due cycle does not pay the merchant.
+- Not funding is effectively a way to skip that payment cycle, but it is not a merchant-side cancellation.
+- The vault remains reusable after refund/reset unless a future contract version adds explicit vault cancellation or archival.
 
 For mainnet, run both:
 
@@ -115,9 +124,16 @@ insert into merchant_payment_methods (
 );
 ```
 
-Only `status = verified` merchants are returned to the miniapp. If the registry is unavailable or empty, the miniapp falls back to the custom merchant option so local testing still works.
+Only `status = verified` merchants with enabled payment methods are returned to the miniapp. If the registry is unavailable or empty, the miniapp falls back to the custom merchant option so local testing still works.
 
 The miniapp also keeps a custom merchant option available, but warns users that custom payout addresses are not registry-verified.
+
+Verified merchants should be added only after confirming:
+
+- the merchant controls the payout wallet
+- the wallet is on Celo mainnet
+- the merchant accepts cUSD for the intended service
+- the merchant can reconcile payment from vault address, transaction hash, service name, or invoice metadata
 
 Merchant writes can also go through the relayer:
 

@@ -8,6 +8,10 @@ This runbook covers the current hosted/testnet-ready MVP:
 - Supabase metadata
 - Bridge/Card disabled
 
+SplitVault is currently a shared recurring payment coordinator. Members fund each cycle, and the vault pays a merchant wallet only when the cycle is fully funded and due. If a cycle is underfunded by the deadline, funded members are refunded and the vault resets for the next cycle.
+
+This does not cancel the external service. If a group stops using the service, they can stop funding future cycles, but they should still cancel or pause the service directly with the merchant.
+
 ## Deployed Celo Sepolia Contracts
 
 ```text
@@ -67,7 +71,7 @@ Flow:
 2. Confirm wallet is on Celo Sepolia.
 3. Click `Mint Test cUSD`.
 4. Create a DIRECT vault.
-5. Use a merchant wallet you control.
+5. Use a custom merchant wallet you control.
 6. Keep the default billing day to test payout immediately.
 7. Fund every member share.
 8. Click `Run Upkeep`.

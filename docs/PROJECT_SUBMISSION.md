@@ -2,13 +2,15 @@
 
 ## Short Description
 
-SplitVault is a Celo MiniPay-ready app for splitting recurring stablecoin payments with friends, teams, or communities. Users create a shared vault, add members, fund their own share in cUSD or testnet MockcUSD, and the vault pays a verified merchant wallet directly when the cycle is due.
+SplitVault is a Celo MiniPay-ready app for shared recurring cUSD payments. Users create a shared vault, add members, fund their own share, and the vault pays a verified or custom merchant wallet directly when the cycle is due.
 
 ## Full Description
 
-SplitVault turns a recurring crypto payment into a shared on-chain commitment. A vault creator chooses a direct merchant recipient, sets the monthly amount and billing day, then invites members by wallet address. Each member funds only their own share. When the vault is due, the upkeep flow checks whether the cycle is fully funded. Fully funded vaults settle directly to the merchant wallet; underfunded vaults can be refunded through the contract flow.
+SplitVault turns a recurring crypto payment into a shared on-chain commitment. A vault creator chooses a direct merchant recipient, sets the cycle amount and billing day, then invites members by wallet address. Each member funds only their own share. When the cycle is due, the upkeep flow checks whether the vault is fully funded. Fully funded vaults settle directly to the merchant wallet; underfunded vaults refund funded members and reset for the next cycle.
 
-The current production path focuses on direct stablecoin settlement on Celo. Merchant discovery is backed by a Supabase registry so users can select verified merchant wallets instead of copy-pasting addresses. A custom merchant option remains available for early testing and community/invoice use cases, but users are warned to verify the recipient wallet, chain, token, and invoice amount themselves.
+The current production path focuses on direct cUSD settlement on Celo. Today, users can pay a custom merchant wallet they have independently verified. In the future, SplitVault will add verified merchant entries for services that accept direct crypto payments on Celo mainnet, so groups can set up a shared recurring payment once and then fund each cycle without copy-pasting addresses.
+
+SplitVault does not cancel the external service for users. If members stop using a service, they can stop funding future cycles. When a cycle is not fully funded by its deadline, the contract does not pay the merchant; any funded shares are refunded and the vault resets for the next cycle. The group should still cancel or pause the actual service directly with the merchant when needed.
 
 SplitVault is non-custodial: funds move through smart contracts and direct token transfers, not through a hosted balance managed by the app. The relayer stores readable vault metadata, supports merchant registry administration, and can run upkeep checks, but it does not custody user funds.
 
@@ -16,6 +18,7 @@ SplitVault is non-custodial: funds move through smart contracts and direct token
 
 - Testnet direct route is implemented on Celo Sepolia with MockcUSD.
 - Merchant registry and verified payment-method filtering are implemented.
+- Custom merchant wallet flow is implemented for manually verified recipients.
 - Dashboard and vault detail show connected-wallet funding status.
 - Relayer upkeep endpoints can check and execute due vaults.
 - Mainnet settlement is intentionally gated until keys, merchant wallets, and tiny-value smoke tests are complete.

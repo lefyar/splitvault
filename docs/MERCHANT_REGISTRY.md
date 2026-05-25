@@ -2,6 +2,8 @@
 
 SplitVault uses Supabase as the source of truth for merchant discovery. Contracts still hold the real payout address, but the registry lets users pick verified merchants instead of pasting addresses manually.
 
+Verified merchants are intended for services that accept direct crypto payment on Celo mainnet. The custom merchant flow is separate: users manually enter a wallet they have independently verified.
+
 ## Tables
 
 - `merchants`: display metadata and verification status.
@@ -13,6 +15,8 @@ The miniapp only shows merchants that are:
 - `status = verified`
 - attached to an enabled payment method
 - matching the active `chainId` and `tokenAddress`
+
+A merchant row without an enabled payment method is not shown by the public merchant endpoint. This is why `custom-direct-wallet` can exist as registry metadata while the app still uses a local custom wallet fallback.
 
 ## Public Read
 
@@ -134,3 +138,15 @@ Users should only use custom merchants when they have independently confirmed:
 - the monthly amount matches the expected invoice
 
 For production, prefer verified registry merchants whenever possible.
+
+## Verified Merchant Criteria
+
+Before adding a production verified merchant:
+
+- Confirm the merchant controls the payout wallet.
+- Confirm the wallet is on Celo mainnet.
+- Confirm the merchant accepts cUSD for the specific service or invoice type.
+- Confirm how the merchant reconciles payment: vault address, transaction hash, service name, customer account, or invoice memo.
+- Send a tiny cUSD test payment before exposing the merchant to users.
+
+SplitVault does not cancel merchant-side services. If members stop funding a vault, the contract skips payment for that underfunded cycle and refunds funded members, but users still need to cancel the actual service with the merchant if they no longer want it.

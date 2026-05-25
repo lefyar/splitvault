@@ -6,20 +6,27 @@ import { CUSD_ADDRESS, ERC20_ABI } from '../lib/contracts'
 import { Address } from '../types'
 import { loadVaultsForMember } from '../lib/vaults'
 
+function getWalletErrorMessage(err: unknown) {
+  if (err instanceof Error) return err.message
+  return String(err)
+}
+
 export function useWallet() {
-  const { address, isConnecting, balance, setAddress, setConnecting, setBalance, setConnected, setVaults, setLoadingVaults } = useStore()
+  const { address, isConnecting, balance, walletError, setAddress, setConnecting, setBalance, setConnected, setWalletError, setVaults, setLoadingVaults } = useStore()
 
   const connect = async () => {
     try {
       setConnecting(true)
-      await switchToCelo()
       const addr = await initializeMiniPay()
+      await switchToCelo()
       setAddress(addr)
       setConnected(true)
+      setWalletError(null)
       await updateBalance(addr)
       await loadVaults(addr)
     } catch (err) {
       console.error('Wallet connection failed:', err)
+      setWalletError(getWalletErrorMessage(err))
     } finally {
       setConnecting(false)
     }
@@ -57,6 +64,7 @@ export function useWallet() {
     setAddress(null)
     setBalance(0n)
       setConnected(false)
+      setWalletError(null)
       setVaults([])
   }
 
@@ -84,6 +92,7 @@ export function useWallet() {
   return {
     address,
     balance,
+    walletError,
     isConnecting,
     connect,
     disconnect,

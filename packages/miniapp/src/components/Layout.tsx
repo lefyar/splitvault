@@ -1,10 +1,10 @@
 import React from 'react'
 import { useWallet } from '../hooks/useWallet'
-import { Button } from './UI'
+import { Button, Card } from './UI'
 import { ACTIVE_NETWORK_NAME } from '../lib/contracts'
 
 export function Header() {
-    const { address, connect, disconnect, isConnecting } = useWallet()
+    const { address, connect, disconnect, isConnecting, walletError } = useWallet()
 
     return (
         <header className="sticky top-0 z-50 border-b border-[#192837]/10 bg-[#F2F2EE]/85 backdrop-blur-xl">
@@ -32,6 +32,16 @@ export function Header() {
                     </Button>
                 )}
             </div>
+            {walletError && !address && (
+                <div className="max-w-6xl mx-auto px-4 pb-3">
+                    <Card className="bg-amber-50 border-amber-200 px-4 py-3">
+                        <p className="text-sm text-amber-950">{walletError}</p>
+                        <p className="text-xs text-amber-900 mt-1">
+                            Open SplitVault inside MiniPay or a mobile wallet browser with Celo support, then try again.
+                        </p>
+                    </Card>
+                </div>
+            )}
         </header>
     )
 }

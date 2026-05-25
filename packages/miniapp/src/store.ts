@@ -7,6 +7,7 @@ interface AppStore {
   balance: bigint // cUSD balance
   isConnecting: boolean
   isConnected: boolean
+  walletError: string | null
 
   // Vault state
   vaults: VaultWithMeta[]
@@ -18,6 +19,7 @@ interface AppStore {
   setBalance: (balance: bigint) => void
   setConnecting: (connecting: boolean) => void
   setConnected: (connected: boolean) => void
+  setWalletError: (error: string | null) => void
   setVaults: (vaults: VaultWithMeta[]) => void
   addVault: (vault: VaultWithMeta) => void
   setActiveVault: (id: Address | null) => void
@@ -31,6 +33,7 @@ export const useStore = create<AppStore>((set) => ({
   balance: 0n,
   isConnecting: false,
   isConnected: false,
+  walletError: null,
   vaults: [],
   activeVaultId: null,
   isLoadingVaults: false,
@@ -40,6 +43,7 @@ export const useStore = create<AppStore>((set) => ({
   setBalance: (balance) => set({ balance }),
   setConnecting: (connecting) => set({ isConnecting: connecting }),
   setConnected: (connected) => set({ isConnected: connected }),
+  setWalletError: (error) => set({ walletError: error }),
   setVaults: (vaults) => set({ vaults }),
   addVault: (vault) => set((state) => ({ vaults: [...state.vaults, vault] })),
   setActiveVault: (id) => set({ activeVaultId: id }),

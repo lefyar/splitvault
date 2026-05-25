@@ -99,6 +99,10 @@ export async function getConnectedAddress(): Promise<Address | undefined> {
 }
 
 export async function switchToCelo() {
+  if (!window.ethereum) {
+    throw new Error('Wallet not found. Open SplitVault inside MiniPay or a mobile wallet browser.')
+  }
+
   const chainId = `0x${ACTIVE_CHAIN_ID.toString(16)}`
   const isMainnet = ACTIVE_CHAIN_ID === CELO_CHAIN_ID
 
@@ -121,7 +125,9 @@ export async function switchToCelo() {
           },
         ],
       })
+      return
     }
+    throw err
   }
 }
 

@@ -11,6 +11,7 @@ interface MerchantRow {
   description: string
   category?: string
   icon?: string
+  theme_color?: string
   suggested_cost: number
   route: 'DIRECT'
   status: 'draft' | 'verified' | 'disabled'
@@ -58,6 +59,7 @@ type MerchantAdminInput = Partial<{
   description: string
   category: string
   icon: string
+  themeColor: string
   suggestedCost: number
   route: 'DIRECT'
   status: 'draft' | 'verified' | 'disabled'
@@ -106,6 +108,9 @@ export function buildMerchantAdminRows(input: MerchantAdminInput): MerchantAdmin
   if (input.suggestedCost !== undefined && (!Number.isFinite(input.suggestedCost) || input.suggestedCost <= 0)) {
     throw new Error('suggestedCost must be greater than 0')
   }
+  if (input.themeColor !== undefined && !/^#[a-fA-F0-9]{6}$/.test(input.themeColor)) {
+    throw new Error('themeColor must be a #RRGGBB hex color')
+  }
 
   const paymentMethods = input.paymentMethods ?? []
   const merchant: MerchantRow = {
@@ -114,6 +119,7 @@ export function buildMerchantAdminRows(input: MerchantAdminInput): MerchantAdmin
     description: input.description.trim(),
     category: input.category?.trim() || undefined,
     icon: input.icon?.trim() || undefined,
+    theme_color: input.themeColor,
     suggested_cost: input.suggestedCost ?? 10,
     route: 'DIRECT',
     status: input.status ?? 'draft',
@@ -197,6 +203,7 @@ function formatMerchant(merchant: MerchantRow, methods: MerchantPaymentMethodRow
     description: merchant.description,
     category: merchant.category,
     icon: merchant.icon,
+    themeColor: merchant.theme_color,
     suggestedCost: merchant.suggested_cost,
     route: merchant.route,
     status: merchant.status,

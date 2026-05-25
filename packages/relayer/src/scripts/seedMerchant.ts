@@ -30,6 +30,7 @@ async function main() {
       description: process.env.MERCHANT_SEED_DESCRIPTION || 'Internal direct-payout merchant for tiny production smoke tests.',
       category: process.env.MERCHANT_SEED_CATEGORY || 'internal',
       icon: process.env.MERCHANT_SEED_ICON || 'TEST',
+      themeColor: process.env.MERCHANT_SEED_THEME_COLOR || '#0f766e',
       suggestedCost: Number(process.env.MERCHANT_SEED_SUGGESTED_COST || '1'),
       status: process.env.MERCHANT_SEED_STATUS || 'verified',
       paymentMethods: [

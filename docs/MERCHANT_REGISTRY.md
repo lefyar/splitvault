@@ -62,6 +62,7 @@ MERCHANT_SEED_NAME=Launch test wallet
 MERCHANT_SEED_DESCRIPTION=Internal direct-payout merchant for tiny production smoke tests.
 MERCHANT_SEED_CATEGORY=internal
 MERCHANT_SEED_ICON=TEST
+MERCHANT_SEED_THEME_COLOR=#0f766e
 MERCHANT_SEED_SUGGESTED_COST=1
 MERCHANT_SEED_STATUS=verified
 ```
@@ -78,6 +79,7 @@ curl -X POST "$RELAYER_BASE_URL/api/merchants" \
     "description": "Internal direct-payout merchant for tiny production smoke tests.",
     "category": "internal",
     "icon": "TEST",
+    "themeColor": "#0f766e",
     "suggestedCost": 1,
     "status": "verified",
     "paymentMethods": [
@@ -121,3 +123,16 @@ Disable only one payment method by posting the method again with:
 - Send a tiny test transfer before marking `verified`.
 - Keep `api_invoice` and `payment_link` methods disabled until an adapter exists.
 - Never expose `MERCHANT_ADMIN_TOKEN` to frontend or `VITE_` variables.
+
+## Custom Merchants
+
+The miniapp keeps a manual custom merchant option available even when verified merchants are configured. Custom merchants are useful for early community, creator, agency, or invoice-recipient use cases, but they are not registry-verified.
+
+Users should only use custom merchants when they have independently confirmed:
+
+- the merchant controls the wallet
+- the wallet is on the active Celo network
+- the merchant accepts the selected token
+- the monthly amount matches the expected invoice
+
+For production, prefer verified registry merchants whenever possible.

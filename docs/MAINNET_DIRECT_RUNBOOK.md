@@ -117,6 +117,8 @@ insert into merchant_payment_methods (
 
 Only `status = verified` merchants are returned to the miniapp. If the registry is unavailable or empty, the miniapp falls back to manual direct-wallet templates so local testing still works.
 
+Merchants can include a `themeColor` (`#RRGGBB`) for miniapp card accents. The miniapp also keeps a custom merchant option available, but warns users that custom payout addresses are not registry-verified.
+
 Merchant writes can also go through the relayer:
 
 ```text

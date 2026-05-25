@@ -17,6 +17,7 @@ export function NewVault() {
     const [isDeploying, setIsDeploying] = useState(false)
 
     // Step 1: Service selection
+    const customMerchantTemplate = MERCHANTS.find((merchant) => merchant.id === 'custom')
     const [merchantOptions, setMerchantOptions] = useState<Merchant[]>(MERCHANTS)
     const [merchantRegistryStatus, setMerchantRegistryStatus] = useState<string | null>(null)
     const [selectedService, setSelectedService] = useState<string | null>(null)
@@ -46,7 +47,12 @@ export function NewVault() {
                 const merchants = await fetchMerchants(ACTIVE_CHAIN_ID, CUSD_ADDRESS)
                 if (cancelled) return
                 if (merchants.length > 0) {
-                    setMerchantOptions(merchants)
+                    setMerchantOptions([
+                        ...merchants,
+                        ...(customMerchantTemplate && !merchants.some((merchant) => merchant.id === customMerchantTemplate.id)
+                            ? [customMerchantTemplate]
+                            : []),
+                    ])
                     setMerchantRegistryStatus(null)
                 } else {
                     setMerchantOptions(MERCHANTS)
@@ -99,6 +105,7 @@ export function NewVault() {
     }
 
     const serviceName = customServiceName.trim() || selectedMerchant?.name || ''
+    const isCustomMerchant = selectedMerchant?.id === 'custom' || selectedMerchant?.id === 'custom-direct-wallet' || !hasVerifiedPayout
     const memberCount = members.length + 1
     const parsedMonthlyAmount = Number.parseFloat(monthlyAmount || '0')
     const estimatedShare = Number.isFinite(parsedMonthlyAmount) && memberCount > 0
@@ -197,6 +204,7 @@ export function NewVault() {
                         {merchantOptions.map((merchant) => {
                             const unavailable = merchant.route !== 'DIRECT'
                             const verifiedMethod = merchant.paymentMethods?.some((method) => method.enabled && method.mode === 'static_wallet' && method.payoutAddress)
+                            const themeColor = merchant.themeColor || '#0f766e'
                             return (
                                 <Card
                                     key={merchant.id}
@@ -204,6 +212,7 @@ export function NewVault() {
                                     onClick={() => !unavailable && setSelectedService(merchant.id)}
                                     className={`cursor-pointer border-2 transition-all relative ${selectedService === merchant.id ? 'border-gray-900 bg-gray-50' : 'border-gray-200'
                                         } ${unavailable ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                    style={{ borderTopColor: selectedService === merchant.id ? themeColor : undefined, borderTopWidth: selectedService === merchant.id ? 4 : undefined }}
                                 >
                                     {unavailable && (
                                         <div className="absolute top-2 right-2">
@@ -215,7 +224,10 @@ export function NewVault() {
                                             <Badge variant="success">Verified</Badge>
                                         </div>
                                     )}
-                                    <div className="mb-3 inline-flex h-10 min-w-10 items-center justify-center rounded-md bg-teal-50 px-2 text-sm font-bold text-teal-800">
+                                    <div
+                                        className="mb-3 inline-flex h-10 min-w-10 items-center justify-center rounded-md px-2 text-sm font-bold text-white"
+                                        style={{ backgroundColor: themeColor }}
+                                    >
                                         {merchant.icon || 'PAY'}
                                     </div>
                                     <h3 className="font-semibold text-gray-900">{merchant.name}</h3>
@@ -295,6 +307,14 @@ export function NewVault() {
                                     ? `This payout address comes from the merchant registry for ${CUSD_LABEL} on ${ACTIVE_NETWORK_NAME}.`
                                     : `Use a wallet address you control for launch testing. For a real merchant, confirm they can receive ${CUSD_LABEL} on ${ACTIVE_NETWORK_NAME}.`}
                             </p>
+                            {isCustomMerchant && (
+                                <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
+                                    <p className="text-sm font-semibold text-amber-950">Custom merchant risk</p>
+                                    <p className="text-xs text-amber-900 mt-1">
+                                        SplitVault cannot verify custom recipients. Funds sent to the wrong wallet or wrong network cannot be recovered by the app. Confirm the merchant controls this Celo wallet and accepts {CUSD_LABEL} before members fund the vault.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </Card>
 

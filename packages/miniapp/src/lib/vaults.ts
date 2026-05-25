@@ -94,6 +94,28 @@ export async function loadVaultsForMember(member: Address): Promise<VaultWithMet
   return vaults.filter((vault): vault is VaultWithMeta => vault !== null)
 }
 
+export async function loadVaultByAddress(vaultAddress: Address, viewer: Address): Promise<VaultWithMeta> {
+  const client = getPublicClient()
+  const fallbackMetadata: VaultMetadata = {
+    contract_addr: vaultAddress,
+    creator_addr: viewer,
+    service_name: 'Direct Vault',
+    merchant_addr: '0x0000000000000000000000000000000000000000',
+    token_addr: CUSD_ADDRESS,
+    monthly_amount: '0',
+    billing_day: 1,
+    route: 'DIRECT',
+    chain_id: ACTIVE_CHAIN_ID,
+    members: [],
+  }
+
+  const [metadata] = await fetchVaultMetadata(viewer)
+    .then((vaults) => vaults.filter((vault) => vault.contract_addr.toLowerCase() === vaultAddress.toLowerCase()))
+    .catch(() => [])
+
+  return hydrateVault(metadata || fallbackMetadata, viewer, client)
+}
+
 async function hydrateVault(meta: VaultMetadata, viewer: Address, client: ReturnType<typeof getPublicClient>): Promise<VaultWithMeta> {
   const [
     monthlyAmount,

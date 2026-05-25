@@ -3,19 +3,43 @@ import { Link, useParams } from 'react-router-dom'
 import { Button, Badge, ProgressBar, Tabs } from '../components/UI'
 import { Card } from '../components/UI'
 import { useStore } from '../store'
-import { formatCusd, fundUserShare, getVaultHistory, mintTestCusd, runFactoryUpkeep, type VaultHistoryItem } from '../lib/vaults'
+import { assertValidAddress, formatCusd, fundUserShare, getVaultHistory, loadVaultByAddress, mintTestCusd, runFactoryUpkeep, type VaultHistoryItem } from '../lib/vaults'
 import { useWallet } from '../hooks/useWallet'
 import { ACTIVE_EXPLORER_URL, ACTIVE_NETWORK_NAME, CUSD_LABEL, IS_TESTNET } from '../lib/contracts'
+import type { VaultWithMeta } from '../types'
 
 export function VaultDetail() {
     const [activeTab, setActiveTab] = useState('members')
     const [txStatus, setTxStatus] = useState<string | null>(null)
     const [history, setHistory] = useState<VaultHistoryItem[]>([])
     const [isLoadingHistory, setIsLoadingHistory] = useState(false)
+    const [directVault, setDirectVault] = useState<VaultWithMeta | null>(null)
+    const [isLoadingDirectVault, setIsLoadingDirectVault] = useState(false)
     const { id } = useParams()
     const { address, vaults } = useStore()
     const { loadVaults, updateBalance } = useWallet()
-    const vault = vaults.find((candidate) => candidate.id.toLowerCase() === id?.toLowerCase())
+    const listedVault = vaults.find((candidate) => candidate.id.toLowerCase() === id?.toLowerCase())
+    const vault = listedVault || directVault
+
+    useEffect(() => {
+        if (!id || !address || listedVault || directVault?.id.toLowerCase() === id.toLowerCase()) return
+
+        const loadDirectVault = async () => {
+            setIsLoadingDirectVault(true)
+            setTxStatus(null)
+            try {
+                const vaultAddress = assertValidAddress(id, 'Vault address')
+                setDirectVault(await loadVaultByAddress(vaultAddress, address))
+            } catch (err) {
+                setTxStatus(err instanceof Error ? err.message : String(err))
+                setDirectVault(null)
+            } finally {
+                setIsLoadingDirectVault(false)
+            }
+        }
+
+        loadDirectVault()
+    }, [id, address, listedVault?.id, directVault?.id])
 
     useEffect(() => {
         if (activeTab !== 'history' || !vault) return
@@ -37,8 +61,10 @@ export function VaultDetail() {
     if (!vault) {
         return (
             <Card className="text-center py-12">
-                <h1 className="text-2xl font-bold text-gray-900">Vault not found</h1>
-                <p className="text-gray-600 mt-2 mb-5">This vault is not loaded in the miniapp yet.</p>
+                <h1 className="text-2xl font-bold text-gray-900">{isLoadingDirectVault ? 'Loading vault...' : 'Vault not found'}</h1>
+                <p className="text-gray-600 mt-2 mb-5">
+                    {isLoadingDirectVault ? 'Reading this vault directly from Celo.' : txStatus || 'This vault is not loaded in the miniapp yet.'}
+                </p>
                 <Link to="/">
                     <Button>Back to Dashboard</Button>
                 </Link>

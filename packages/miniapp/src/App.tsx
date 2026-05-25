@@ -23,7 +23,7 @@ function App() {
                             <div>
                                 <h2 className="text-4xl sm:text-5xl font-heading leading-[0.95] text-[#192837]">Connect your MiniPay wallet</h2>
                                 <p className="text-[#192837]/70 mt-4 leading-tight">
-                                    Create shared {CUSD_LABEL} vaults for crypto-native SaaS invoices, invite members, and pay verified merchant wallets directly.
+                                    Create shared {CUSD_LABEL} vaults, invite members, and pay verified or custom merchant wallets directly on Celo.
                                 </p>
                             </div>
                             {isMiniPay ? (

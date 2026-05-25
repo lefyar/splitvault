@@ -13,7 +13,7 @@ API-invoice adapters are future extensions.
 Miniapp
   ├─ connects MiniPay / mobile wallet / injected wallet
   ├─ creates vaults through VaultFactory
-  ├─ lets members fund shares with cUSD or testnet MockcUSD
+  ├─ lets members fund shares with cUSD
   └─ reads metadata, merchants, and history from relayer/Supabase
 
 Relayer
@@ -41,7 +41,7 @@ Supabase
 
 `VaultFactory`:
 
-- stores the active cUSD/MockcUSD token address
+- stores the active cUSD token address
 - deploys `SubscriptionVault`
 - tracks creator vaults and all vaults
 - implements `checkUpkeep(0x)` and `performUpkeep(0x)`

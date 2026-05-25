@@ -42,7 +42,7 @@ function isPrivateKey(value: unknown): value is Address {
 }
 
 function getChainId() {
-  return Number(process.env.CELO_CHAIN_ID || process.env.VITE_CELO_CHAIN_ID || CELO_SEPOLIA_CHAIN_ID)
+  return Number(process.env.CELO_CHAIN_ID || process.env.VITE_CELO_CHAIN_ID || CELO_CHAIN_ID)
 }
 
 function assertMainnetAllowed(chainId: number) {

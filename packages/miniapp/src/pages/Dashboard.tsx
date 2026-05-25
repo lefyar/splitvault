@@ -47,7 +47,7 @@ export function Dashboard() {
         },
         {
             title: 'Direct merchant route',
-            body: `The current production path is direct ${CUSD_LABEL} payout. For launch, use merchants, invoice recipients, or controlled test wallets that can receive ${CUSD_LABEL} on ${ACTIVE_NETWORK_NAME}.`,
+            body: `The current production path is direct ${CUSD_LABEL} payout. For launch, use custom merchant wallets you control or recipients that can receive ${CUSD_LABEL} on ${ACTIVE_NETWORK_NAME}.`,
         },
         {
             title: 'Off-chain integrations',
@@ -133,7 +133,7 @@ export function Dashboard() {
                             {vaults.length === 0 ? 'No vaults yet' : 'No vaults match this filter'}
                         </h3>
                         <p className="text-[#192837]/60 mt-2 mb-5">
-                            {vaults.length === 0 ? `Create a direct ${CUSD_LABEL} vault for a crypto-native SaaS merchant or invoice recipient.` : 'Try another status filter.'}
+                            {vaults.length === 0 ? `Create a direct ${CUSD_LABEL} vault for a custom merchant wallet or invoice recipient.` : 'Try another status filter.'}
                         </p>
                         <Link to="/vault/new">
                             <Button>Create Vault</Button>

@@ -13,8 +13,8 @@ async function main() {
   const adminToken = requireEnv('MERCHANT_ADMIN_TOKEN')
 
   const merchantId = process.env.MERCHANT_SEED_ID || 'custom-direct-wallet'
-  const tokenSymbol = process.env.MERCHANT_SEED_TOKEN_SYMBOL || 'MockcUSD'
-  const chainId = Number(process.env.MERCHANT_SEED_CHAIN_ID || '11142220')
+  const tokenSymbol = process.env.MERCHANT_SEED_TOKEN_SYMBOL || 'cUSD'
+  const chainId = Number(process.env.MERCHANT_SEED_CHAIN_ID || '42220')
   const tokenAddress = requireEnv('MERCHANT_SEED_TOKEN_ADDRESS')
   const payoutAddress = requireEnv('MERCHANT_SEED_PAYOUT_ADDRESS')
 

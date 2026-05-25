@@ -4,13 +4,14 @@ SplitVault is a Celo MiniPay-ready app for shared recurring cUSD payments.
 Users create a vault, add members, fund their own share, and the vault pays a
 verified or custom merchant wallet directly when the cycle is due.
 
-The current version focuses on the `DIRECT` route only: on-chain cUSD/MockcUSD
-funding, direct merchant wallet payout, Supabase metadata, and relayer-assisted
-upkeep. Bridge/Card style routes are future work.
+The current version focuses on the `DIRECT` route only: on-chain cUSD funding,
+direct merchant wallet payout, Supabase metadata, and relayer-assisted upkeep.
+Bridge/Card style routes are future work.
 
 ## Current Status
 
-- Celo Sepolia testnet flow is working with MockcUSD.
+- Celo mainnet `VaultFactory` is deployed and configured as the default app network.
+- Celo Sepolia testnet flow remains available for regression work.
 - Custom merchant wallet flow is available.
 - Merchant registry is implemented for future verified Celo mainnet merchants.
 - Members can see their active share, funded amount, and remaining amount.

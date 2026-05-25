@@ -12,7 +12,7 @@ async function main() {
   const relayerBaseUrl = requireEnv('RELAYER_BASE_URL')
   const adminToken = requireEnv('MERCHANT_ADMIN_TOKEN')
   const vaultAddress = requireEnv('REPAIR_VAULT_ADDRESS')
-  const chainId = Number(process.env.REPAIR_CHAIN_ID || '11142220')
+  const chainId = Number(process.env.REPAIR_CHAIN_ID || '42220')
 
   const response = await fetch(`${relayerBaseUrl.replace(/\/$/, '')}/api/vaults/repair`, {
     method: 'POST',

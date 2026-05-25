@@ -9,6 +9,8 @@ interface VaultRow {
   creator_addr: Address
   service_name: string
   merchant_addr: Address
+  merchant_id?: string
+  payment_method_id?: string
   token_addr: Address
   monthly_amount: string
   billing_day: number
@@ -110,6 +112,8 @@ vaultsRouter.post('/', async (req, res) => {
         monthlyAmount: string
         billingDay: number
         merchantAddress: Address
+        merchantId?: string
+        paymentMethodId?: string
         networkId: number
         route: 'DIRECT'
         members: Array<{ name: string; wallet: Address; share: number; shareAmount?: string }>
@@ -136,6 +140,8 @@ vaultsRouter.post('/', async (req, res) => {
       creator_addr: body.creator,
       service_name: params.serviceName,
       merchant_addr: params.merchantAddress,
+      merchant_id: params.merchantId,
+      payment_method_id: params.paymentMethodId,
       token_addr: body.tokenAddress,
       monthly_amount: params.monthlyAmount,
       billing_day: params.billingDay,

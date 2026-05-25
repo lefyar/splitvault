@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import express from 'express'
 import { paymentExecutedRouter } from './routes/paymentExecuted.js'
 import { vaultsRouter } from './routes/vaults.js'
+import { merchantsRouter } from './routes/merchants.js'
 import { bridgeRouter } from './handlers/bridge.js'
 
 dotenv.config({ path: '../../.env.local' })
@@ -22,6 +23,7 @@ app.get('/healthz', (_req, res) => {
 })
 
 app.use('/api/vaults', vaultsRouter)
+app.use('/api/merchants', merchantsRouter)
 
 if (bridgeCardEnabled) {
   app.use('/api/bridge', bridgeRouter)

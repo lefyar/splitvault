@@ -1,4 +1,4 @@
-import type { Address, CreateVaultParams } from '../types'
+import type { Address, CreateVaultParams, Merchant } from '../types'
 
 const RELAYER_BASE_URL = import.meta.env.VITE_RELAYER_BASE_URL || 'http://localhost:3000'
 
@@ -47,4 +47,17 @@ export async function saveVaultMetadata(params: {
   if (!response.ok) {
     throw new Error(`Failed to save vault metadata: ${await response.text()}`)
   }
+}
+
+export async function fetchMerchants(chainId: number, tokenAddress: Address): Promise<Merchant[]> {
+  const params = new URLSearchParams({
+    chainId: String(chainId),
+    tokenAddress,
+  })
+  const response = await fetch(`${RELAYER_BASE_URL}/api/merchants?${params}`)
+  if (!response.ok) {
+    throw new Error(`Failed to load merchants: ${await response.text()}`)
+  }
+  const data = (await response.json()) as { merchants: Merchant[] }
+  return data.merchants
 }

@@ -77,6 +77,46 @@ RELAYER_ADDRESS=<relayer EOA>
 ENABLE_BRIDGE_CARD=false
 ```
 
+## Merchant Registry
+
+Apply `docs/supabase-schema.sql` before using verified merchant selection. The app now calls:
+
+```text
+GET /api/merchants?chainId=<chain>&tokenAddress=<token>
+```
+
+For the direct route, add one `merchant_payment_methods` row per merchant/token where:
+
+```text
+mode = static_wallet
+payout_address = <verified merchant wallet on that chain>
+enabled = true
+```
+
+Example:
+
+```sql
+insert into merchant_payment_methods (
+  merchant_id,
+  chain_id,
+  token_symbol,
+  token_address,
+  mode,
+  payout_address,
+  enabled
+) values (
+  'launch-test-wallet',
+  42220,
+  'cUSD',
+  '0x765DE816845861e75A25fCA122bb6898B8B1282a',
+  'static_wallet',
+  '<merchant wallet>',
+  true
+);
+```
+
+Only `status = verified` merchants are returned to the miniapp. If the registry is unavailable or empty, the miniapp falls back to manual direct-wallet templates so local testing still works.
+
 ## Deploy Mainnet Factory
 
 Before deployment:

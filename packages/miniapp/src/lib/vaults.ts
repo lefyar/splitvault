@@ -172,6 +172,8 @@ export async function createDirectVault(params: {
   monthlyAmount: string
   billingDay: number
   merchantAddress: Address
+  merchantId?: string
+  paymentMethodId?: string
   memberInputs: Array<{ name: string; wallet: Address }>
   onStatus?: (status: string) => void
 }): Promise<Address> {
@@ -223,6 +225,8 @@ export async function createDirectVault(params: {
         billingDay: params.billingDay,
         route: 'DIRECT' as PaymentRoute,
         merchantAddress: params.merchantAddress,
+        merchantId: params.merchantId,
+        paymentMethodId: params.paymentMethodId,
         networkId: ACTIVE_CHAIN_ID,
         members: allMembers.map((member, index) => ({
           name: member.name,

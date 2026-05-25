@@ -1,4 +1,4 @@
-import { Address } from '../types'
+import { Address, Merchant, PaymentRoute } from '../types'
 
 // Celo mainnet and Celo Sepolia.
 export const CELO_CHAIN_ID = 42220
@@ -283,14 +283,14 @@ export const FACTORY_ABI = [
 
 // Direct merchant templates. The merchant wallet is still entered by the user
 // so the vault can pay any real cUSD recipient on the active Celo network.
-export const MERCHANTS = [
+export const MERCHANTS: Merchant[] = [
   {
     id: 'saas',
     name: 'SaaS subscription',
     description: 'Split a shared workspace, software seat, or recurring invoice.',
     icon: 'SaaS',
     suggestedCost: 21,
-    route: 'DIRECT',
+    route: PaymentRoute.DIRECT,
   },
   {
     id: 'creator',
@@ -298,7 +298,7 @@ export const MERCHANTS = [
     description: 'Pool monthly support and send it to a creator or community wallet.',
     icon: 'PAY',
     suggestedCost: 10,
-    route: 'DIRECT',
+    route: PaymentRoute.DIRECT,
   },
   {
     id: 'custom',
@@ -306,6 +306,6 @@ export const MERCHANTS = [
     description: 'Use any merchant or recipient wallet that accepts cUSD.',
     icon: '0x',
     suggestedCost: 10,
-    route: 'DIRECT',
+    route: PaymentRoute.DIRECT,
   },
-] as const
+]

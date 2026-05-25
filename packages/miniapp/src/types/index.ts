@@ -39,8 +39,36 @@ export interface CreateVaultParams {
   billingDay: number
   route: PaymentRoute
   merchantAddress: Address
+  merchantId?: string
+  paymentMethodId?: string
   members: { name: string; wallet: Address; share: number; shareAmount?: string }[]
   networkId: number
+}
+
+export type MerchantPaymentMode = 'static_wallet' | 'api_invoice' | 'payment_link'
+
+export interface MerchantPaymentMethod {
+  id: string
+  merchantId: string
+  chainId: number
+  tokenSymbol: string
+  tokenAddress: Address
+  mode: MerchantPaymentMode
+  payoutAddress?: Address
+  adapterKey?: string
+  enabled: boolean
+}
+
+export interface Merchant {
+  id: string
+  name: string
+  description: string
+  category?: string
+  icon?: string
+  suggestedCost: number
+  route: PaymentRoute
+  status?: 'draft' | 'verified' | 'disabled'
+  paymentMethods?: MerchantPaymentMethod[]
 }
 
 export interface FundingStatus {

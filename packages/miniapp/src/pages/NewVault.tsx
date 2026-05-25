@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Button, Input, ProgressBar, Card, Badge } from '../components/UI'
-import { ACTIVE_NETWORK_NAME, CUSD_LABEL, isFactoryConfigured, MERCHANTS } from '../lib/contracts'
+import { ACTIVE_CHAIN_ID, ACTIVE_NETWORK_NAME, CUSD_ADDRESS, CUSD_LABEL, isFactoryConfigured, MERCHANTS } from '../lib/contracts'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
 import { assertValidAddress, createDirectVault, getProtocolBillingDay } from '../lib/vaults'
 import { useWallet } from '../hooks/useWallet'
-import type { Address } from '../types'
+import { fetchMerchants } from '../lib/api'
+import type { Address, Merchant } from '../types'
 
 export function NewVault() {
     const navigate = useNavigate()
@@ -16,8 +17,14 @@ export function NewVault() {
     const [isDeploying, setIsDeploying] = useState(false)
 
     // Step 1: Service selection
+    const [merchantOptions, setMerchantOptions] = useState<Merchant[]>(MERCHANTS)
+    const [merchantRegistryStatus, setMerchantRegistryStatus] = useState<string | null>(null)
     const [selectedService, setSelectedService] = useState<string | null>(null)
-    const selectedMerchant = selectedService ? MERCHANTS.find((m) => m.id === selectedService) : null
+    const selectedMerchant = selectedService ? merchantOptions.find((m) => m.id === selectedService) : null
+    const selectedPaymentMethod = selectedMerchant?.paymentMethods?.find(
+        (method) => method.enabled && method.mode === 'static_wallet' && method.payoutAddress,
+    )
+    const hasVerifiedPayout = Boolean(selectedPaymentMethod?.payoutAddress)
     const route = selectedMerchant?.route || null
 
     // Pre-fill from merchant
@@ -31,13 +38,42 @@ export function NewVault() {
     const [memberName, setMemberName] = useState('')
     const [memberWallet, setMemberWallet] = useState('')
 
+    useEffect(() => {
+        let cancelled = false
+
+        async function loadMerchantRegistry() {
+            try {
+                const merchants = await fetchMerchants(ACTIVE_CHAIN_ID, CUSD_ADDRESS)
+                if (cancelled) return
+                if (merchants.length > 0) {
+                    setMerchantOptions(merchants)
+                    setMerchantRegistryStatus(null)
+                } else {
+                    setMerchantOptions(MERCHANTS)
+                    setMerchantRegistryStatus('No verified merchants are configured yet. Using manual direct-wallet templates.')
+                }
+            } catch (err) {
+                if (cancelled) return
+                console.warn('Falling back to local merchant templates:', err)
+                setMerchantOptions(MERCHANTS)
+                setMerchantRegistryStatus('Merchant registry unavailable. Using manual direct-wallet templates.')
+            }
+        }
+
+        loadMerchantRegistry()
+        return () => {
+            cancelled = true
+        }
+    }, [])
+
     // Update monthly amount and billing day when service is selected
     useEffect(() => {
         if (selectedMerchant) {
             setMonthlyAmount(String(selectedMerchant.suggestedCost))
             setBillingDay(String(getProtocolBillingDay()))
+            setMerchantAddress(selectedPaymentMethod?.payoutAddress || '')
         }
-    }, [selectedMerchant])
+    }, [selectedMerchant, selectedPaymentMethod])
 
     const addMember = () => {
         if (memberName && memberWallet) {
@@ -117,6 +153,8 @@ export function NewVault() {
                 monthlyAmount,
                 billingDay: Number(billingDay),
                 merchantAddress: assertValidAddress(merchantAddress, 'Merchant wallet'),
+                merchantId: selectedMerchant.id,
+                paymentMethodId: selectedPaymentMethod?.id,
                 memberInputs: members.map((member) => ({
                     name: member.name,
                     wallet: assertValidAddress(member.wallet, 'Member wallet') as Address,
@@ -152,12 +190,13 @@ export function NewVault() {
                 <div className="space-y-6">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">Choose Direct Merchant Type</h2>
-                        <p className="text-gray-600 mt-2">Pick a template, then enter the real merchant wallet that will receive {CUSD_LABEL}.</p>
+                        <p className="text-gray-600 mt-2">Pick a verified merchant when available, or use a manual direct-wallet template.</p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {MERCHANTS.map((merchant) => {
+                        {merchantOptions.map((merchant) => {
                             const unavailable = merchant.route !== 'DIRECT'
+                            const verifiedMethod = merchant.paymentMethods?.some((method) => method.enabled && method.mode === 'static_wallet' && method.payoutAddress)
                             return (
                                 <Card
                                     key={merchant.id}
@@ -171,17 +210,29 @@ export function NewVault() {
                                             <Badge variant="warning">Soon</Badge>
                                         </div>
                                     )}
+                                    {verifiedMethod && (
+                                        <div className="absolute top-2 right-2">
+                                            <Badge variant="success">Verified</Badge>
+                                        </div>
+                                    )}
                                     <div className="mb-3 inline-flex h-10 min-w-10 items-center justify-center rounded-md bg-teal-50 px-2 text-sm font-bold text-teal-800">
-                                        {merchant.icon}
+                                        {merchant.icon || 'PAY'}
                                     </div>
                                     <h3 className="font-semibold text-gray-900">{merchant.name}</h3>
                                     <p className="text-sm text-gray-600 mt-2">{merchant.description}</p>
                                     <p className="text-xs text-gray-500 mt-3">Starts around {merchant.suggestedCost} {CUSD_LABEL}/mo</p>
+                                    {verifiedMethod && <p className="text-xs text-emerald-700 mt-1">Payout wallet is managed by registry</p>}
                                     {merchant.route !== 'DIRECT' && <p className="text-xs text-gray-500 mt-1">{merchant.route}</p>}
                                 </Card>
                             )
                         })}
                     </div>
+
+                    {merchantRegistryStatus && (
+                        <Card className="bg-amber-50 border-amber-200">
+                            <p className="text-sm text-amber-900">{merchantRegistryStatus}</p>
+                        </Card>
+                    )}
 
                     <Card className="bg-teal-50 border-teal-200">
                         <p className="text-sm text-teal-950">
@@ -233,13 +284,16 @@ export function NewVault() {
                                 placeholder={selectedMerchant?.name || 'Netflix family plan'}
                             />
                             <Input
-                                label="Merchant wallet"
+                                label={hasVerifiedPayout ? 'Verified merchant wallet' : 'Merchant wallet'}
                                 value={merchantAddress}
                                 onChange={(event) => setMerchantAddress(event.target.value)}
+                                disabled={hasVerifiedPayout}
                                 placeholder="0x..."
                             />
                             <p className="text-xs text-black">
-                                Use a wallet address you control for launch testing. For a real merchant, confirm they can receive {CUSD_LABEL} on {ACTIVE_NETWORK_NAME}.
+                                {hasVerifiedPayout
+                                    ? `This payout address comes from the merchant registry for ${CUSD_LABEL} on ${ACTIVE_NETWORK_NAME}.`
+                                    : `Use a wallet address you control for launch testing. For a real merchant, confirm they can receive ${CUSD_LABEL} on ${ACTIVE_NETWORK_NAME}.`}
                             </p>
                         </div>
                     </Card>

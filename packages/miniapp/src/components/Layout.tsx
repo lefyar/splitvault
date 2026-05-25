@@ -16,7 +16,7 @@ export function Header() {
     }, [])
 
     return (
-        <header className="sticky top-0 z-[100] isolate w-full px-0 py-0 sm:transition-all sm:duration-300">
+        <header className={`sticky z-[100] isolate w-full px-0 py-0 transition-all duration-300 ${isScrolled ? 'top-2 px-3 sm:top-0 sm:px-0' : 'top-0'}`}>
             <div
                 className={`mx-auto flex items-center justify-between gap-3 px-4 transition-all duration-300 ease-out ${isScrolled
                     ? 'max-w-4xl rounded-xl bg-[#07070a]/78 py-2 shadow-[0_14px_48px_rgba(0,0,0,0.38)] ring-1 ring-white/[0.06] backdrop-blur-2xl sm:mt-4'
